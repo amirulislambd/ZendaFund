@@ -16,6 +16,8 @@ import {
   Compass,
   GitBranchPlus,
 } from "lucide-react";
+import Image from "next/image";
+import Logo from "../ui/Logo";
 
 const publicNavLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -153,12 +155,7 @@ export default function Navbar() {
     <>
     <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30">
-            <span className="text-base font-bold text-emerald-400">Z</span>
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-emerald-400">ZendaFund</span>
-        </Link>
+     <Logo/>
 
         <nav className="hidden items-center gap-6 md:flex">
           {publicNavLinks.map((link) => (

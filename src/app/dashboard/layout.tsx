@@ -1,0 +1,37 @@
+import { redirect } from "next/navigation";
+import { UserSessionToSSR } from "@/lib/core/session";
+import DashboardSidebar from "@/components/dashboard/Dashboardsidebar";
+import { DashboardRole } from "@/lib/Dashboardnav";
+
+
+
+const VALID_ROLES: DashboardRole[] = ["Supporter", "Creator", "Admin"];
+
+const DashboardLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const user = await UserSessionToSSR();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const role: DashboardRole = VALID_ROLES.includes(
+    user.role as DashboardRole
+  )
+    ? (user.role as DashboardRole)
+    : "Supporter";
+
+  return (
+    <div className="flex min-h-screen flex-col bg-[#0d1210] lg:flex-row container mx-auto">
+      <DashboardSidebar role={role} userName={user.name} />
+      <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
+        {children}
+      </main>
+    </div>
+  );
+};
+
+export default DashboardLayout;
