@@ -5,11 +5,16 @@ import { mockCampaigns } from '@/lib/data';
 import Link from 'next/link';
 
 export default function Home() {
+
+
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       <Navbar />
       <main className="flex-1">
         <HeroSection />
+
+        
 
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4">

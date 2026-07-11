@@ -23,12 +23,17 @@ This roadmap is built to satisfy two separate briefs at the same time:
 | Responsive Landing (7+ sections) | Engaging Homepage | 8 sections with animation |
 | Explore page (filter, sort, search) | Campaign Discovery | `/explore` with full filters |
 | Details page | Campaign Details + Contribute | `/campaign/[id]` |
-| Auth (login, register, validation) | 3-role auth + JWT | better-auth + MongoDB |
+| Auth (login, register, validation) | 3-role auth + JWT | better-auth + MongoDB (httpOnly cookie session) |
 | Dashboard | 3-role dashboards | `/dashboard/[role]/...` |
-| Protected routes | Role-based access | Middleware + JWT |
+| Protected routes | Role-based access | Middleware + session |
+| Protected `/items/add` | Add New Campaign | Creator → `/dashboard/creator/add-campaign` |
+| Protected `/items/manage` | My Campaigns + Manage Campaigns | Creator + Admin tables |
 | About + Contact pages | — | `/about` + `/contact` |
+| Recharts / Chart.js (dashboard stats) | Dashboard stats cards | Recharts in role dashboards |
 | Skeleton loaders | — | All listing pages |
+| 4 cards per row (desktop) | Campaign cards | Explore + Home grids |
 | Demo credentials | Demo login buttons | Admin/Creator/Supporter buttons |
+| Navbar: 3+ routes (logged out), 5+ (logged in) | Navbar spec | Dynamic navbar via `useSession` |
 | README (10+ bullets) | README | Single comprehensive README |
 | Live deployment | Vercel deployment | Vercel |
 | — | 20 client commits | Tracked in Git |
@@ -38,6 +43,7 @@ This roadmap is built to satisfy two separate briefs at the same time:
 | — | imgBB image upload | Registration + Campaign form |
 | — | Pagination | My Contributions page |
 | — | Env variables | `.env.local` properly |
+| — | localStorage access-token | better-auth cookie session (secure alternative) |
 
 ---
 
@@ -70,6 +76,8 @@ This roadmap is built to satisfy two separate briefs at the same time:
 - [x] Type Definitions: `Campaign`, `User` interfaces
 - [ ] Type Definitions: `Contribution`, `Notification`, `Withdrawal`, `Payment` interfaces
 - [x] `src/lib/auth.ts` — better-auth config with MongoDB adapter & Google OAuth
+- [x] `src/lib/auth-client.ts` — single auth client + `inferAdditionalFields` plugin
+- [x] `customSession` plugin — expose `role`, `credits`, `profilePic` in session
 - [x] `src/app/api/auth/[...all]/route.ts` — auth handler
 - [x] Email + Password registration & login (better-auth)
 - [ ] Middleware: `src/middleware.ts` — protect `/dashboard/*` routes
@@ -94,10 +102,13 @@ This roadmap is built to satisfy two separate briefs at the same time:
 
 ### Navbar
 - [x] Logo + ZendaFund name & Basic nav links
-- [ ] Connect to auth state (logged-in vs logged-out)
-- [ ] **Logged-out view:** Home, Explore, Login, Register, Join as Developer
-- [ ] **Logged-in view:** Home, Dashboard, Available Credits, Notification bell, User profile, Join as Developer
-- [ ] Fully responsive mobile menu
+- [x] Connect to auth state (logged-in vs logged-out) via `useSession`
+- [x] **Logged-out view:** Home, Explore, Login, Register, Join as Developer (5 routes)
+- [x] **Logged-in view:** Home, Explore, Dashboard, Credits badge, Profile dropdown, Join as Developer, Sign Out (6+ routes)
+- [x] Profile dropdown shows: name, email, role badge, Dashboard link, Sign Out button
+- [x] Role-based dashboard link (`/dashboard/supporter|creator|admin`)
+- [x] Avatar from `profilePic` or Google `image`
+- [x] Fully responsive mobile menu (hamburger)
 
 ### Footer
 - [x] Basic footer exists
@@ -115,6 +126,7 @@ This roadmap is built to satisfy two separate briefs at the same time:
 - [ ] Add sort: by deadline / by amount raised / by newest
 - [ ] Add skeleton loader while data loads
 - [ ] Show progress bar on each card
+- [ ] Desktop: 4 cards per row (uniform card size)
 - [ ] Implement pagination (or infinite scroll)
 
 ### Campaign Details Page (`/campaign/[id]`)
@@ -122,6 +134,7 @@ This roadmap is built to satisfy two separate briefs at the same time:
 - [ ] Contribution form (only for logged-in Supporters)
 - [ ] Save contribution: date, amount, status "pending", deduct credits
 - [ ] Deadline countdown timer
+- [ ] Related campaigns section (same category)
 
 ---
 
@@ -150,7 +163,8 @@ This roadmap is built to satisfy two separate briefs at the same time:
 
 - [ ] Sidebar: Logo, Credits, User avatar, Role, Username, Notification bell, Navigation links
 - [ ] Mobile-responsive sidebar (collapsible)
-- [ ] Persist auth after reload on private route
+- [ ] Persist auth after reload on private route (better-auth cookie session)
+- [ ] Install `recharts` for dashboard stat charts (Assignment A requirement)
 
 ---
 
@@ -227,6 +241,19 @@ This roadmap is built to satisfy two separate briefs at the same time:
 - [ ] Finalize README with 10+ bullet points, credentials, and live URL
 - [ ] Test all flows on live site (Vercel)
 - [ ] Ensure 20+ Client Commits and 12+ Server Commits are tracked
+
+---
+
+## ⚠️ Requirement Notes & Fixes
+
+| Topic | Requirement | ZendaFund Approach |
+|-------|-------------|-------------------|
+| Auth token storage | Crowdfunding brief asks for localStorage token | better-auth uses secure httpOnly cookies — satisfies "persist after reload" without XSS risk |
+| `/items/add` & `/items/manage` | TypeScript brief protected pages | Mapped to Creator dashboard: Add Campaign + My Campaigns; Admin gets Manage Campaigns |
+| Login redirect | Both briefs → Dashboard after login | Update `callbackURL` to `/dashboard/[role]` in LoginForm & RegisterForm |
+| Navbar session fields | Show credits, role, avatar | Fixed: single `authClient` + `customSession` + `inferAdditionalFields` |
+| Role casing | DB may store `Supporter` / `supporter` | Normalize with `toLowerCase()` in `getDashboardPath()` |
+| Charts | Recharts / Chart.js in TypeScript brief | Add Recharts to dashboard home stats (Phase 6–9) |
 
 ---
 
