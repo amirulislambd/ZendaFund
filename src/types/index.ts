@@ -21,3 +21,12 @@ export interface User {
   credits: number;
   profilePic?: string;
 }
+
+export interface RegisterFormInputs {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: 'Supporter' | 'Creator';
+  avatar?: FileList;
+}

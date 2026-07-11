@@ -1,188 +1,250 @@
-# ZendaFund Roadmap (3.5 Days)
-
-## Goal
-Finish a strong, submission-ready crowdfunding platform within 3.5 days by focusing on the most important features first.
-
----
+# ZendaFund — Full Implementation Plan & Master Task List
 
 ## Requirement Alignment for Both Assignments
 This roadmap is built to satisfy two separate briefs at the same time:
+- **Assignment A — TypeScript / Next.js UI Project:** Responsive landing page, explore page, details page, auth, clean UI.
+- **Assignment B — Junior MERN / Crowdfunding Platform:** Supporter, Creator, and Admin roles, campaign discovery, contribution, approval, management flow, dashboards.
 
 ## Architecture and Performance Principles
-The project should follow Next.js-first development practices throughout:
 - Prefer Server Components whenever the data is fetched or rendered on the server
 - Keep client components limited to interactive UI such as forms, sliders, and menus
 - Use Next.js built-in image optimization, route handling, and metadata support
-- Use lightweight motion effects rather than heavy animation libraries
-- Keep the experience smooth on mobile and slower networks
-- Ensure the app remains accessible, responsive, and fast across devices
-
-### Recommended usage of Next.js features
-- Use the Image component for all campaign and hero images
-- Use metadata and SEO-friendly page structure where possible
-- Keep layouts modular and route-based
-- Use server-safe data loading for public content and dashboards when possible
-- Use client components only for interactions that require state or browser APIs
-
-### Motion guideline
 - Use subtle motion for hero sections, cards, and transitions
-- Avoid overusing animation so the experience stays professional and performant
-- If framer-motion is used, keep it light and purposeful
-
-### Assignment A — TypeScript / Next.js UI Project
-Requirements to cover:
-- Next.js + TypeScript frontend
-- Tailwind CSS styling with a maximum of 3 primary colors
-- Responsive landing page with meaningful sections
-- Explore page with cards, filters, sorting, and skeletons
-- Details page with structured content
-- Auth pages with validation and demo credentials
-- Additional pages such as About and Contact
-- Clean UI/UX and professional presentation
-
-### Assignment B — Junior MERN / Crowdfunding Platform
-Requirements to cover:
-- Crowdfunding platform with Supporter, Creator, and Admin roles
-- Campaign discovery, contribution, approval, and management flow
-- Creator dashboard with campaign creation and review actions
-- Supporter dashboard with contribution tracking and credits
-- Admin dashboard for approvals, user management, and withdrawals
-- Notifications, role-based access, and secure project structure
-- GitHub commit discipline, README quality, and deployment readiness
-
-### Merge Strategy
-The project should be implemented so that:
-- The frontend satisfies the TypeScript assignment requirements
-- The platform logic satisfies the crowdfunding assessment requirements
-- The same UI and architecture can support both without conflict
-
-### Requirement Coverage Map
-- Public experience: landing page, hero slider, explore page, campaign details
-- User experience: login/register, protected pages, role-based navigation
-- Business logic: campaign creation, approvals, support contributions, credits, withdrawals
-- Submission quality: README, GitHub commits, deployment, demo credentials, environment variables
+- Keep the experience smooth on mobile and slower networks
 
 ---
 
-## Day 1 — Foundation + Core UI
-### Priority
-Set up the project and build the public experience quickly.
+## 🔗 Combined Requirement Coverage
 
-### Tasks
-- Initialize the Next.js + TypeScript project
-- Configure Tailwind CSS and the main color theme
-- Build the base layout: navbar, footer, and responsive container
-- Create landing page with hero section and 4–5 meaningful sections
-- Build the explore campaigns page with campaign cards
-- Create campaign details page
-- Add loading skeletons for cards and pages
-- Structure reusable components so server-rendered sections are separated from client-only interactions
-- Start using Next.js Image optimization for visual content
-
-### Deliverable
-A working public website with polished UI and campaign browsing.
-
----
-
-## Day 2 — Authentication + Core Functional Flow
-### Priority
-Make the platform usable with real user actions.
-
-### Tasks
-- Create login and registration pages
-- Add validation and basic error handling
-- Add demo login buttons for admin, creator, and supporter
-- Implement auth persistence across reloads
-- Build campaign creation form for creators
-- Add contribution form for supporters
-- Add basic campaign approval flow concept
-- Keep interactive forms in client components while using server components for static or data-driven sections
-
-### Deliverable
-Users can sign up, log in, create campaigns, and contribute.
+| Assignment A চাহিদা | Assignment B চাহিদা | ZendaFund Solution |
+|---------------------|---------------------|-------------------|
+| Next.js + TypeScript | MERN Stack | Next.js + TypeScript + MongoDB |
+| Tailwind CSS (≤3 colors) | Any CSS | Tailwind v4, Emerald/Slate/Teal |
+| Responsive Landing (7+ sections) | Engaging Homepage | 8 sections with animation |
+| Explore page (filter, sort, search) | Campaign Discovery | `/explore` with full filters |
+| Details page | Campaign Details + Contribute | `/campaign/[id]` |
+| Auth (login, register, validation) | 3-role auth + JWT | better-auth + MongoDB |
+| Dashboard | 3-role dashboards | `/dashboard/[role]/...` |
+| Protected routes | Role-based access | Middleware + JWT |
+| About + Contact pages | — | `/about` + `/contact` |
+| Skeleton loaders | — | All listing pages |
+| Demo credentials | Demo login buttons | Admin/Creator/Supporter buttons |
+| README (10+ bullets) | README | Single comprehensive README |
+| Live deployment | Vercel deployment | Vercel |
+| — | 20 client commits | Tracked in Git |
+| — | 12 server commits | `src/app/api/` commits |
+| — | Notification system | `/api/notifications` + bell icon |
+| — | Stripe payment | Credit purchase + Withdrawal |
+| — | imgBB image upload | Registration + Campaign form |
+| — | Pagination | My Contributions page |
+| — | Env variables | `.env.local` properly |
 
 ---
 
-## Day 3 — Dashboards + Role-Based Access
-### Priority
-Complete the main role-based features.
+## 📦 PHASE 0 — Dependencies & Setup
 
-### Tasks
-- Build supporter dashboard
-- Build creator dashboard
-- Build admin dashboard
-- Add protected routes based on role
-- Add simple filters and search on explore page
-- Add basic notifications or status messages
-- Keep dashboard data and route-level content server-oriented where possible
-- Keep animations subtle and purposeful to preserve performance
-
-### Deliverable
-A complete multi-role experience with dashboards and access control.
-
----
-
-## Day 3.5 — Polish + Submission Ready
-### Priority
-Make the project look professional and submission-ready.
-
-### Tasks
-- Fix responsiveness issues
-- Improve spacing, alignment, and card consistency
-- Add final content and remove placeholder text
-- Test main flows: login, register, create campaign, contribute
-- Prepare README with project summary, features, and demo credentials
-- Deploy the app and collect the live link
-- Review the app for server vs client component separation
-- Confirm that Next.js optimizations are being used effectively
-
-### Deliverable
-A polished app ready to submit.
+- [x] Next.js 16 + TypeScript project initialized
+- [x] Tailwind CSS v4 configured
+- [x] Swiper installed
+- [x] MongoDB URI in `.env`
+- [x] better-auth credentials in `.env`
+- [x] Google OAuth credentials in `.env`
+- [x] Install remaining dependencies:
+  - [x] `better-auth` package
+  - [x] `mongodb` driver
+  - [ ] `stripe` + `@stripe/stripe-js`
+  - [ ] `axios`
+  - [x] `lucide-react`
+  - [ ] `react-hot-toast`
+  - [ ] `framer-motion`
+- [x] Fix `.env` format (MongoDB URI malformed)
+- [ ] Create `.env.local` with all keys properly
+- [ ] Add Stripe test keys to `.env.local`
+- [ ] Add imgBB API key to `.env.local`
 
 ---
 
-## Must-Have Features for This Timeline
-- Responsive landing page
-- Explore page with campaigns
-- Campaign details page
-- Login and registration
-- Creator campaign creation
-- Supporter contribution flow
-- Role-based dashboards
-- Basic admin approval flow
-- Clean UI and deployment
+## 🗄️ PHASE 1 — Database & Auth Backend
+
+- [ ] `src/lib/mongodb.ts` — connection singleton
+- [x] Type Definitions: `Campaign`, `User` interfaces
+- [ ] Type Definitions: `Contribution`, `Notification`, `Withdrawal`, `Payment` interfaces
+- [x] `src/lib/auth.ts` — better-auth config with MongoDB adapter & Google OAuth
+- [x] `src/app/api/auth/[...all]/route.ts` — auth handler
+- [x] Email + Password registration & login (better-auth)
+- [ ] Middleware: `src/middleware.ts` — protect `/dashboard/*` routes
 
 ---
 
-## Nice-to-Have If Time Allows
-- Advanced filters
-- Notifications system
-- Withdrawal flow
-- Payment history
-- Better admin management panel
+## 🏠 PHASE 2 — Home Page (7+ Sections)
+
+- [x] Section 1: HeroSection — Swiper slider (3 slides, animation ✅)
+- [ ] Section 2: Top Funded Campaigns (top 6 by `raisedAmount`)
+- [ ] Section 3: How It Works — 3-step visual flow
+- [ ] Section 4: Explore by Category — category grid with icons
+- [ ] Section 5: Platform Impact (Stats) — animated counters
+- [ ] Section 6: Testimonials — Swiper slider (static, 4–5 testimonials)
+- [ ] Section 7: Call to Action (CTA)
+- [ ] Section 8: Newsletter signup (bonus)
+- [ ] Add `framer-motion` entrance animations on scroll
 
 ---
 
-## Final Checklist
-- [ ] Project setup completed
-- [ ] Landing page built
-- [ ] Explore and details pages built
-- [ ] Authentication completed
-- [ ] Creator flow completed
-- [ ] Supporter flow completed
-- [ ] Dashboards completed
-- [ ] Responsive UI checked
-- [ ] README prepared
-- [ ] App deployed
+## 🧭 PHASE 3 — Navbar & Footer
 
+### Navbar
+- [x] Logo + ZendaFund name & Basic nav links
+- [ ] Connect to auth state (logged-in vs logged-out)
+- [ ] **Logged-out view:** Home, Explore, Login, Register, Join as Developer
+- [ ] **Logged-in view:** Home, Dashboard, Available Credits, Notification bell, User profile, Join as Developer
+- [ ] Fully responsive mobile menu
+
+### Footer
+- [x] Basic footer exists
+- [ ] Add social links (LinkedIn, GitHub, Facebook)
+- [ ] Working links only
+
+---
+
+## 🔍 PHASE 4 — Explore & Campaign Details Pages
+
+### Explore Page (`/explore`)
+- [x] Basic card grid exists
+- [ ] Connect to real DB data (approved campaigns)
+- [ ] Make search & category filter functional
+- [ ] Add sort: by deadline / by amount raised / by newest
+- [ ] Add skeleton loader while data loads
+- [ ] Show progress bar on each card
+- [ ] Implement pagination (or infinite scroll)
+
+### Campaign Details Page (`/campaign/[id]`)
+- [ ] Show all campaign fields (image, title, goal, raised, etc.)
+- [ ] Contribution form (only for logged-in Supporters)
+- [ ] Save contribution: date, amount, status "pending", deduct credits
+- [ ] Deadline countdown timer
+
+---
+
+## 🔐 PHASE 5 — Auth Pages
+
+### Login Page (`/login`)
+- [x] Login page created at `/login`
+- [x] Email + Password form
+- [x] Google Sign-In button
+- [x] Demo login buttons (Admin / Creator / Supporter auto-fill)
+- [x] Validation & Error handling
+- [ ] Redirect to `/dashboard` after login (currently redirects to `/`)
+
+### Register Page (`/register`)
+- [x] Register page created at `/register`
+- [x] Name, Email, Profile Picture upload field
+- [x] Password + Confirm Password (with validation)
+- [x] Role dropdown (Supporter / Creator)
+- [x] Google Sign-Up button
+- [x] On success → assigns default credits & redirects
+- [ ] imgBB actual upload integration
+
+---
+
+## 📊 PHASE 6 — Dashboard Layout
+
+- [ ] Sidebar: Logo, Credits, User avatar, Role, Username, Notification bell, Navigation links
+- [ ] Mobile-responsive sidebar (collapsible)
+- [ ] Persist auth after reload on private route
+
+---
+
+## 👤 PHASE 7 — Supporter Dashboard
+
+- [ ] **Home:** Stats (Total contributions, pending, approved amount) + Approved Contributions Table
+- [ ] **Explore Campaigns:** Campaign cards with View Details button
+- [ ] **My Contributions:** Table + Pagination
+- [ ] **Purchase Credit:** Stripe credit packages (100 credits = $10, etc.)
+- [ ] **Payment History:** Table of all payments
+
+---
+
+## 🎨 PHASE 8 — Creator Dashboard
+
+- [ ] **Home:** Stats (Total campaigns, active, raised) + Contributions to Review (Approve/Reject logic)
+- [ ] **Add New Campaign:** Form fields + imgBB upload (status "pending")
+- [ ] **My Campaigns:** Table + Update/Delete logic (refund approved supporters on delete)
+- [ ] **Withdrawals:** Conversion logic (20 credits = $1), min 200 credits, Payment system dropdown
+- [ ] **Payment History:** Table of withdrawal requests
+
+---
+
+## 🛡️ PHASE 9 — Admin Dashboard
+
+- [ ] **Home:** Platform stats (Supporters, Creators, Total Credits, Total Payments)
+- [ ] **Campaign Approvals:** Pending campaigns → Approve/Reject logic
+- [ ] **Withdrawal Requests:** Pending withdrawals → Payment Success logic
+- [ ] **Manage Users:** Table + Update Role + Remove User
+- [ ] **Manage Campaigns:** Table + Delete Campaign
+- [ ] **Reports:** Reported campaigns → Suspend/Delete logic
+
+---
+
+## 🌐 PHASE 10 — API Routes (12+ Server Commits)
+
+- [ ] `GET/POST /api/campaigns`
+- [ ] `GET/PATCH/DELETE /api/campaigns/[id]`
+- [ ] `GET/POST /api/contributions`
+- [ ] `PATCH /api/contributions/[id]`
+- [ ] `GET /api/users` & `PATCH/DELETE /api/users/[id]`
+- [ ] `GET/POST /api/withdrawals` & `PATCH /api/withdrawals/[id]`
+- [ ] `GET/POST /api/notifications`
+- [ ] `GET/POST /api/payments`
+- [ ] `POST /api/stripe/create-checkout` & `POST /api/stripe/webhook`
+- [ ] `GET/POST /api/reports`
+
+---
+
+## 🔔 PHASE 11 — Notification System
+
+- [ ] Notifications collection schema (message, toEmail, actionRoute, time, read)
+- [ ] Triggers: Approve/Reject Contribution, Approve/Reject Campaign, Approve Withdrawal, New Contribution
+- [ ] Navbar: Notification bell icon + Floating pop-up
+
+---
+
+## 💳 PHASE 12 — Stripe Payment & 🖼️ PHASE 13 — imgBB
+
+- [ ] Implement Stripe checkout session for credits
+- [ ] Implement imgBB upload on Registration & Add Campaign
+
+---
+
+## 📄 PHASE 14 — Additional Pages & 📱 PHASE 15 — Responsive Polish
+
+- [ ] About Page & Contact Page
+- [ ] Mobile menu, responsive tables, consistent card sizes
+
+---
+
+## 📝 PHASE 16 — README, Submission & 🚀 Deployment
+
+- [ ] Finalize README with 10+ bullet points, credentials, and live URL
+- [ ] Test all flows on live site (Vercel)
+- [ ] Ensure 20+ Client Commits and 12+ Server Commits are tracked
+
+---
+
+## ✅ Daily Progress Summary
+
+| Day | Focus | Status |
+|-----|-------|--------|
+| Day 1 | Phase 0 + Phase 1 + Phase 2 + Phase 3 | ⬜ In Progress |
+| Day 2 | Phase 4 + Phase 5 + Phase 6 + Phase 7 | ⬜ Not Started |
+| Day 3 | Phase 8 + Phase 9 + Phase 10 + Phase 11 | ⬜ Not Started |
+| Day 3.5 | Phase 12–17 (Polish + Deploy) | ⬜ Not Started |
+
+---
 ## GitHub Submission Plan
 - Create a GitHub repository for the project
 - Add the remote with:
-
 ```bash
 git remote add origin https://github.com/amirulislambd/ZendaFund.git
 ```
-
 - Commit in small, meaningful steps
 - Push regularly after each completed section
-- Keep the repository history clear for submission
