@@ -47,3 +47,29 @@ export interface RegisterFormInputs {
   role: 'Supporter' | 'Creator';
   avatar?: FileList;
 }
+
+// --- Campaign Types ---
+
+export const CAMPAIGN_CATEGORIES = [
+  "Technology",
+  "Art",
+  "Community",
+  "Health",
+  "Sustainability",
+  "Education",
+] as const;
+
+export type CampaignCategory = (typeof CAMPAIGN_CATEGORIES)[number];
+
+export type CampaignStatus = "draft" | "pending" | "approved" | "rejected";
+
+export interface CampaignFormData {
+  campaign_title: string;
+  campaign_story: string;
+  category: CampaignCategory;
+  funding_goal: number;
+  minimum_contribution: number;
+  deadline: string;
+  reward_info: string;
+  campaign_image_url: string;
+}

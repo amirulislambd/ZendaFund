@@ -4,8 +4,7 @@ import HeroSection from '@/components/sections/HeroSection';
 import { mockCampaigns } from '@/lib/data';
 import Link from 'next/link';
 
-export default function Home() {
-
+export default  function Home() {
 
 
   return (
