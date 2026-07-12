@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getToken } from "./session";
 
-const baseUrl = process.env.BETTER_AUTH_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL as string;
 
 const authHeader = async (): Promise<Record<string, string>> => {
   const token = await getToken();

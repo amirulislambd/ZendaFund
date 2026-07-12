@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
 import { UserSessionToSSR } from "@/lib/core/session";
 import DashboardSidebar from "@/components/dashboard/Dashboardsidebar";
-import { DashboardRole } from "@/lib/Dashboardnav";
+import { normalizeDashboardRole } from "@/lib/Dashboardnav";
 
 
-
-const VALID_ROLES: DashboardRole[] = ["Supporter", "Creator", "Admin"];
 
 const DashboardLayout = async ({
   children,
@@ -18,11 +16,7 @@ const DashboardLayout = async ({
     redirect("/login");
   }
 
-  const role: DashboardRole = VALID_ROLES.includes(
-    user.role as DashboardRole
-  )
-    ? (user.role as DashboardRole)
-    : "Supporter";
+  const role = normalizeDashboardRole(user.role);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#0d1210] lg:flex-row container mx-auto">

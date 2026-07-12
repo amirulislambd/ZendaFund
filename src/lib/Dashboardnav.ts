@@ -16,13 +16,31 @@ import {
   } from "lucide-react";
   
   export type DashboardRole = "Supporter" | "Creator" | "Admin";
-  
+  export type StoredRole = "supporter" | "creator" | "admin" | undefined;
+
   export type DashboardNavItem = {
     label: string;
     href: string;
     icon: LucideIcon;
   };
-  
+
+  export const normalizeStoredRole = (value?: string): StoredRole => {
+    const normalized = (value ?? "").trim().toLowerCase();
+
+    if (normalized === "admin") return "admin";
+    if (normalized === "creator") return "creator";
+    if (normalized === "supporter") return "supporter";
+    return undefined;
+  };
+
+  export const normalizeDashboardRole = (value?: string): DashboardRole => {
+    const normalized = normalizeStoredRole(value);
+
+    if (normalized === "admin") return "Admin";
+    if (normalized === "creator") return "Creator";
+    return "Supporter";
+  };
+
   export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
     Supporter: [
       { label: "Home", href: "/dashboard/supporter", icon: Home },

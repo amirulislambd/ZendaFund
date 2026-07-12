@@ -44,7 +44,7 @@ export interface RegisterFormInputs {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'Supporter' | 'Creator';
+  role: "supporter" | "creator";
   avatar?: FileList;
 }
 

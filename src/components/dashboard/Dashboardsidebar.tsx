@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
-import { dashboardNav, type DashboardRole } from "@/lib/Dashboardnav";
+import { dashboardNav, normalizeDashboardRole, type DashboardRole } from "@/lib/Dashboardnav";
 import { signOut } from "@/lib/auth-client";
 import Logo from "../ui/Logo";
 
@@ -23,7 +23,8 @@ export default function DashboardSidebar({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navItems = dashboardNav[role];
+  const normalizedRole = normalizeDashboardRole(role);
+  const navItems = dashboardNav[normalizedRole];
 
   const handleSignOut = async () => {
     await signOut();
@@ -32,7 +33,7 @@ export default function DashboardSidebar({
   };
 
   const isActive = (href: string) => {
-    if (href === `/dashboard/${role.toLowerCase()}`) {
+    if (href === `/dashboard/${normalizedRole.toLowerCase()}`) {
       return pathname === href;
     }
     return pathname === href || pathname.startsWith(`${href}/`);

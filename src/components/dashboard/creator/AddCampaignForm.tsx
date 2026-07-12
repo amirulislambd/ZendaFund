@@ -16,6 +16,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { CampaignFormData, CAMPAIGN_CATEGORIES } from "@/types";
+import { AddNewCampaign } from "@/lib/actions/campaign";
+import toast from "react-hot-toast";
 
 /**
  * ZendaFund - Add New Campaign Form (Client Component)
@@ -71,6 +73,22 @@ export default function AddCampaignForm() {
   const onSubmit: SubmitHandler<CampaignFormData> = async (data) => {
     console.log("Submitting Campaign:", { ...data, status: "pending" });
     console.log("Image URL:", data.campaign_image_url);
+
+    // Simulate server response
+    const res = await AddNewCampaign({ ...data, status: "pending" });
+
+    if(res.status === 400) {
+      toast.error(res.message);
+      return;
+    }
+
+    if(res.status === 500) {
+      toast.error(res.message);
+      return;
+    }
+
+    toast.success(`Campaign submitted successfully! It will be visible after Admin approval.`);
+
     await new Promise((resolve) => setTimeout(resolve, 1500));
     alert("Campaign submitted successfully! It will be visible after Admin approval.");
   };

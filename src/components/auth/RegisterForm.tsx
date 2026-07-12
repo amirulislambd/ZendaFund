@@ -14,6 +14,7 @@ import {
   UserCircle
 } from 'lucide-react';
 import { signUp, signIn } from '@/lib/auth-client';
+import { normalizeStoredRole } from '@/lib/Dashboardnav';
 import { RegisterFormInputs } from '@/types';
 
 export default function RegisterForm() {
@@ -29,6 +30,7 @@ export default function RegisterForm() {
   });
 
   const selectedRole = watch('role');
+  const normalizedSelectedRole = normalizeStoredRole(selectedRole);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -43,14 +45,15 @@ export default function RegisterForm() {
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     try {
-      const { data: user, error } = await signUp.email({
+      const normalizedRole = normalizeStoredRole(data.role) ?? 'supporter';
+      const { error } = await signUp.email({
         email: data.email,
         password: data.password,
         name: data.fullName,
-        role: data.role,
-        credits: data.role === 'Supporter' ? 50 : 20,
-        profilePic: avatarPreview || undefined,
-      } as any);
+        role: normalizedRole,
+        credits: normalizedRole === 'supporter' ? 50 : 20,
+        profilePic: avatarPreview ?? '',
+      });
 
       if (error) {
         console.error('Registration failed:', error);
@@ -197,8 +200,8 @@ export default function RegisterForm() {
           >
             <div className="flex items-center gap-3">
               <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus:text-[#10b981] transition-colors" />
-              <span className={selectedRole ? "text-white" : "text-slate-600"}>
-                {selectedRole || "Choose your role"}
+              <span className={normalizedSelectedRole ? "text-white" : "text-slate-600"}>
+                {normalizedSelectedRole || "Choose your role"}
               </span>
             </div>
             <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${isRoleOpen ? 'rotate-180 text-[#10b981]' : ''}`} />
@@ -211,7 +214,7 @@ export default function RegisterForm() {
 
           {isRoleOpen && (
             <div className="absolute z-20 w-full mt-2 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-              {(['Supporter', 'Creator'] as const).map((option) => (
+              {(['supporter', 'creator'] as const).map((option) => (
                 <button
                   key={option}
                   type="button"
@@ -222,7 +225,7 @@ export default function RegisterForm() {
                   className="w-full px-6 py-4 flex items-center justify-between text-slate-300 hover:bg-slate-800 hover:text-white transition-all text-left"
                 >
                   <span className="font-medium">{option}</span>
-                  {selectedRole === option && <Check className="w-5 h-5 text-[#10b981]" />}
+                  {normalizedSelectedRole === option && <Check className="w-5 h-5 text-[#10b981]" />}
                 </button>
               ))}
             </div>

@@ -3,6 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import HeroSection from '@/components/sections/HeroSection';
 import { mockCampaigns } from '@/lib/data';
 import Link from 'next/link';
+import { Toaster } from 'react-hot-toast';
 
 export default  function Home() {
 
@@ -48,6 +49,7 @@ export default  function Home() {
             ))}
           </div>
         </section>
+        <Toaster />
       </main>
       <Footer />
     </div>
