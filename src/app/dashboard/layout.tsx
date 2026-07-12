@@ -19,7 +19,7 @@ const DashboardLayout = async ({
   const role = normalizeDashboardRole(user.role);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0d1210] lg:flex-row container mx-auto">
+    <div className="flex min-h-screen flex-col bg-(--surface) text-(--foreground) lg:flex-row container mx-auto">
       <DashboardSidebar role={role} userName={user.name} />
       <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
         {children}

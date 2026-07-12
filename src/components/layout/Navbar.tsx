@@ -16,8 +16,8 @@ import {
   Compass,
   GitBranchPlus,
 } from "lucide-react";
-import Image from "next/image";
 import Logo from "../ui/Logo";
+import ThemeToggle from "../ui/ThemeToggle";
 
 const publicNavLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -101,25 +101,25 @@ export default function Navbar() {
 
   const profileMenuContent = user ? (
     <>
-      <div className="mb-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-3">
+      <div className="mb-2 rounded-xl border border-(--border) bg-(--surface-muted)/80 px-3 py-3">
         <div className="flex items-center gap-3">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={user.name}
-              className="h-12 w-12 rounded-full object-cover ring-2 ring-emerald-400/30"
+              className="h-12 w-12 rounded-full object-cover ring-2 ring-[var(--accent)]/30"
             />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-sm font-bold text-slate-950">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-(--accent) to-teal-500 text-sm font-bold text-(--foreground)">
               {initials}
             </div>
           )}
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-            <p className="truncate text-xs text-slate-400">{user.email}</p>
+            <p className="truncate text-sm font-semibold text-(--foreground)">{user.name}</p>
+            <p className="truncate text-xs text-(--muted)">{user.email}</p>
           </div>
         </div>
-        <span className="mt-2 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+        <span className="mt-2 inline-block rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
           {displayRole}
         </span>
       </div>
@@ -131,10 +131,14 @@ export default function Navbar() {
         </span>
       </div>
 
+      <div className="mb-2 rounded-xl border border-[var(--border)] bg-[var(--surface)]/90 px-2 py-1">
+        <ThemeToggle variant="menu" />
+      </div>
+
       <Link
         href={dashboardPath}
         onClick={() => setIsProfileOpen(false)}
-        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition hover:bg-emerald-500/10 hover:text-emerald-300"
+        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)]"
       >
         <LayoutDashboard className="h-4 w-4" />
         Dashboard
@@ -153,7 +157,14 @@ export default function Navbar() {
 
   return (
     <>
-    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
+    <header
+      className="sticky top-0 z-50 border-b backdrop-blur-md"
+      style={{
+        borderColor: "var(--border)",
+        backgroundColor: "var(--surface)",
+        color: "var(--foreground)",
+      }}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
      <Logo/>
 
@@ -179,21 +190,21 @@ export default function Navbar() {
             href={GITHUB_REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-emerald-400/40 hover:text-emerald-300 sm:flex"
+            className="hidden items-center gap-1.5 rounded-full border border-(--border) bg-(--surface-muted)/70 px-3 py-1.5 text-xs font-semibold text-(--foreground) transition hover:border-(--accent) hover:text-(--accent) sm:flex"
           >
             <GitBranchPlus className="h-3.5 w-3.5" />
             Join as Dev
           </a>
 
           {isPending && (
-            <div className="h-9 w-24 animate-pulse rounded-full bg-slate-700" />
+            <div className="h-9 w-24 animate-pulse rounded-full bg-(--surface-muted)" />
           )}
 
           {!isPending && !user && (
             <div className="hidden items-center gap-2 sm:flex">
               <Link
                 href="/login"
-                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+                className="rounded-full px-4 py-2 text-sm font-semibold text-(--muted) transition hover:text-(--foreground)"
               >
                 Login
               </Link>
@@ -220,7 +231,7 @@ export default function Navbar() {
                 className={`hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition sm:flex ${
                   isDashboardActive
                     ? "bg-emerald-500/15 text-emerald-400"
-                    : "text-slate-300 hover:text-emerald-400"
+                    : "text-(--muted) hover:text-emerald-400"
                 }`}
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -231,7 +242,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen((prev) => !prev)}
-                  className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800/80 p-0.5 pr-3 transition hover:border-emerald-400/40 sm:py-1 sm:pl-1"
+                  className="flex items-center gap-2 rounded-full border border-(--border) bg-(--surface-muted)/80 p-0.5 pr-3 transition hover:border-(--accent)/40 sm:py-1 sm:pl-1"
                   aria-label="Open profile menu"
                   aria-expanded={isProfileOpen}
                 >
@@ -239,26 +250,33 @@ export default function Navbar() {
                     <img
                       src={avatarUrl}
                       alt={user.name}
-                      className="h-8 w-8 rounded-full object-cover ring-1 ring-emerald-400/20"
+                      className="h-8 w-8 rounded-full object-cover ring-1 ring-[var(--accent)]/20"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-xs font-bold text-slate-950">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-(--accent) to-teal-500 text-xs font-bold text-(--foreground)">
                       {initials}
                     </div>
                   )}
                   <div className="hidden text-left sm:block">
-                    <p className="text-xs font-semibold leading-tight text-white">{user.name}</p>
-                    <p className="text-[10px] capitalize text-slate-400">{displayRole}</p>
+                    <p className="text-xs font-semibold leading-tight text-(--foreground)">{user.name}</p>
+                    <p className="text-[10px] capitalize text-(--muted)">{displayRole}</p>
                   </div>
                   <ChevronDown
-                    className={`hidden h-3.5 w-3.5 text-slate-400 transition-transform sm:block ${
+                    className={`hidden h-3.5 w-3.5 text-(--muted) transition-transform sm:block ${
                       isProfileOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 z-50 mt-3 hidden w-56 rounded-2xl border border-slate-700 bg-slate-900/95 p-2 shadow-2xl shadow-black/40 backdrop-blur-md md:block">
+                  <div
+                  className="absolute right-0 z-50 mt-3 hidden w-56 rounded-2xl border p-2 shadow-2xl shadow-black/40 backdrop-blur-md md:block"
+                  style={{
+                    borderColor: "var(--border)",
+                    backgroundColor: "var(--surface)",
+                    color: "var(--foreground)",
+                  }}
+                >
                     {profileMenuContent}
                   </div>
                 )}
@@ -269,16 +287,16 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMobileOpen((prev) => !prev)}
-            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white md:hidden"
+            className="rounded-lg p-2 text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground) md:hidden"
             aria-label="Toggle menu"
           >
-            {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMobileOpen ? <X className="h-5 w-5 text-(--foreground)" /> : <Menu className="h-5 w-5 text-(--foreground)" />}
           </button>
         </div>
       </div>
 
       {isMobileOpen && (
-        <div className="border-t border-slate-800/60 bg-slate-900/95 px-4 py-4 backdrop-blur-md md:hidden">
+        <div className="border-t border-[var(--border)] bg-[var(--surface)]/95 px-4 py-4 text-[var(--foreground)] backdrop-blur-md md:hidden">
           <nav className="flex flex-col gap-1">
             {publicNavLinks.map((link) => (
               <Link
@@ -287,7 +305,7 @@ export default function Navbar() {
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   isActive(link.href)
                     ? "bg-emerald-500/10 text-emerald-400"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    : "text-(--muted) hover:bg-(--surface-muted) hover:text-(--foreground)"
                 }`}
               >
                 <link.icon className="h-4 w-4" />
@@ -296,14 +314,14 @@ export default function Navbar() {
             ))}
 
             {isPending && (
-              <div className="mt-2 h-10 animate-pulse rounded-xl bg-slate-800" />
+              <div className="mt-2 h-10 animate-pulse rounded-xl bg-(--surface-muted)" />
             )}
 
             {!isPending && !user && (
               <>
                 <Link
                   href="/login"
-                  className="mt-2 rounded-xl border border-slate-700 px-4 py-3 text-center text-sm font-semibold text-slate-300 transition hover:border-emerald-400/40 hover:text-white"
+                  className="mt-2 rounded-xl border border-(--border) px-4 py-3 text-center text-sm font-semibold text-(--muted) transition hover:border-emerald-400/40 hover:text-(--foreground)"
                 >
                   Login
                 </Link>
@@ -318,17 +336,17 @@ export default function Navbar() {
 
             {!isPending && user && (
               <>
-                <div className="mt-2 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
-                  <p className="text-sm font-semibold text-white">{user.name}</p>
-                  <p className="text-xs text-slate-400">{user.email}</p>
-                  <span className="mt-1 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+                <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)]/80 px-4 py-3 text-[var(--foreground)]">
+                  <p className="text-sm font-semibold">{user.name}</p>
+                  <p className="text-xs text-[var(--muted)]">{user.email}</p>
+                  <span className="mt-1 inline-block rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
                     {displayRole}
                   </span>
                 </div>
 
                 <Link
                   href={dashboardPath}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-white"
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
@@ -356,7 +374,7 @@ export default function Navbar() {
               href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
             >
               <GitBranchPlus className="h-4 w-4" />
               Join as Developer
@@ -376,17 +394,17 @@ export default function Navbar() {
         />
         <div
           ref={profileDrawerRef}
-          className="absolute inset-y-0 right-0 flex w-[min(18rem,85vw)] flex-col border-l border-slate-700 bg-slate-900 p-4 shadow-2xl shadow-black/50"
+          className="absolute inset-y-0 right-0 flex w-[min(18rem,85vw)] flex-col border-l border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-2xl shadow-black/50"
         >
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-white">My Account</p>
+            <p className="text-sm font-semibold text-(--foreground)">My Account</p>
             <button
               type="button"
               onClick={() => setIsProfileOpen(false)}
-              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              className="rounded-lg p-1.5 text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
               aria-label="Close profile menu"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-(--foreground)" />
             </button>
           </div>
           {profileMenuContent}

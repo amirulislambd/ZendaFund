@@ -50,11 +50,11 @@ export default function Logo({
 
       {showText && (
         <span
-          className={`relative z-10 -ml-1.5 ${textClass} font-bold tracking-tight text-white transition-all duration-500`}
+          className={`relative z-10 -ml-1.5 ${textClass} font-bold tracking-tight text-(--foreground) transition-all duration-500`}
         >
           <span className="brand">
             enda
-            <span className="text-emerald-400 transition-colors duration-500 group-hover:text-emerald-200">
+            <span className="text-(--accent) transition-colors duration-500 group-hover:text-(--accent)/80">
               Fund
             </span>
           </span>

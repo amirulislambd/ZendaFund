@@ -16,7 +16,11 @@ export default function HeroSection() {
   const swiperRef = useRef<SwiperType | null>(null);
 
   return (
-    <section suppressHydrationWarning className="relative isolate overflow-hidden bg-[#161c1a]">
+    <section
+      suppressHydrationWarning
+      className="relative isolate overflow-hidden"
+      style={{ backgroundColor: "var(--surface)" }}
+    >
       <Swiper
         modules={[Autoplay, EffectFade, Pagination]}
         effect="fade"
@@ -44,41 +48,41 @@ export default function HeroSection() {
               />
 
               {/* Scrim: dark from the left so overlaid text stays legible, plus a base tint */}
-              <div className="absolute inset-0 bg-black/35" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0d1210] via-[#0d1210]/70 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0d1210]/80 to-transparent" />
+              <div className="absolute inset-0 bg-[rgba(0,0,0,0.35)]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[rgba(13,18,16,1)] via-[rgba(13,18,16,0.7)] to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[rgba(13,18,16,0.8)] to-transparent" />
 
               {/* Overlaid copy */}
               <div className="relative z-10 flex h-full items-center justify-center px-6 sm:px-10 lg:px-16">
-                <div className="w-full max-w-3xl rounded-[2rem] border border-white/15 bg-white/10 p-8 text-center shadow-2xl backdrop-blur-md sm:p-10 lg:p-12">
+                <div className="w-full max-w-3xl rounded-[2rem] border border-(--border) bg-(--surface)/80 p-8 text-center shadow-2xl backdrop-blur-md sm:p-10 lg:p-12">
                   <div className="mx-auto flex w-fit items-center gap-3">
-                    <span className="h-px w-8 bg-emerald-400/70" />
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    <span className="h-px w-8 bg-(--accent)/70" />
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--accent)">
                       {slide.eyebrow}
                     </span>
                   </div>
 
-                  <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+                  <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight text-(--foreground) sm:text-5xl lg:text-[3.5rem]">
                     <span className="block">{slide.headingLine1}</span>
-                    <span className="block bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                    <span className="block bg-gradient-to-r from-(--accent) to-(--accent)/70 bg-clip-text text-transparent">
                       {slide.headingLine2}
                     </span>
                   </h1>
 
-                  <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
+                  <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-(--muted) sm:text-lg">
                     {slide.description}
                   </p>
 
                   <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                     <a
                       href={slide.primaryCta.href}
-                      className="inline-flex min-w-[180px] items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-[#0d1210] shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-400"
+                      className="inline-flex min-w-[180px] items-center justify-center rounded-full bg-(--accent) px-6 py-3 text-sm font-semibold text-(--surface) shadow-lg shadow-[rgba(52,211,153,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-(--accent)/80"
                     >
                       {slide.primaryCta.label}
                     </a>
                     <a
                       href={slide.secondaryCta.href}
-                      className="inline-flex min-w-[180px] items-center justify-center rounded-full border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400/70 hover:bg-emerald-400/10 hover:text-emerald-300"
+                      className="inline-flex min-w-[180px] items-center justify-center rounded-full border border-(--border) bg-(--surface)/15 px-6 py-3 text-sm font-semibold text-(--foreground) backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-(--accent)/70 hover:bg-(--accent)/10 hover:text-(--accent)"
                     >
                       {slide.secondaryCta.label}
                     </a>
@@ -124,14 +128,14 @@ export default function HeroSection() {
           <button
             aria-label="Previous slide"
             onClick={() => swiperRef.current?.slidePrev()}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-sm transition-colors hover:border-emerald-400/70 hover:text-emerald-300"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-(--border) bg-(--surface-muted)/70 text-(--foreground) backdrop-blur-sm transition-colors hover:border-(--accent)/70 hover:text-(--accent)"
           >
             ‹
           </button>
           <button
             aria-label="Next slide"
             onClick={() => swiperRef.current?.slideNext()}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-sm transition-colors hover:border-emerald-400/70 hover:text-emerald-300"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-(--border) bg-(--surface-muted)/70 text-(--foreground) backdrop-blur-sm transition-colors hover:border-(--accent)/70 hover:text-(--accent)"
           >
             ›
           </button>
