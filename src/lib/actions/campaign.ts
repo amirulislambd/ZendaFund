@@ -1,4 +1,15 @@
-import { ServerMutation } from "../core/serverMutation";
+import type { Campaign, CampaignQuery } from "@/types";
+import { ServerGet, ServerMutation } from "../core/serverMutation";
+
+export type GetCampaignsResponse = {
+  campaigns: Campaign[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+};
 
 export const AddNewCampaign = async (data: object) => {
   try {
@@ -6,5 +17,50 @@ export const AddNewCampaign = async (data: object) => {
     return res;
   } catch (error) {
     console.log("Failed to add new campaign", error);
+  }
+};
+
+// export const GetCampaigns = async (
+//   params: CampaignQuery = {},
+// ): Promise<GetCampaignsResponse> => {
+//   try {
+//     const query = new URLSearchParams();
+
+//     if (params.q) query.set("q", params.q);
+//     if (params.category) query.set("category", params.category);
+//     if (params.page) query.set("page", String(params.page));
+//     if (params.limit) query.set("limit", String(params.limit));
+//     if (params.sort) query.set("sort", params.sort);
+
+//     const url = `campaigns${query.toString() ? `?${query.toString()}` : ""}`;
+//     const res = await ServerGet(url);
+//     return res as GetCampaignsResponse;
+//   } catch (error) {
+//     console.error("Failed to get campaigns", error);
+//     throw error;
+//   }
+// };
+
+export const GetCampaigns = async (
+  params: CampaignQuery = {},
+): Promise<GetCampaignsResponse> => {
+  try {
+    const query = new URLSearchParams();
+
+    if (params.q) query.set("q", params.q);
+    if (params.category) query.set("category", params.category);
+    if (params.page) query.set("page", String(params.page));
+    if (params.limit) query.set("limit", String(params.limit));
+    if (params.sort) query.set("sort", params.sort);
+
+    const url = params.topFunded
+      ? "campaigns/top-funded"
+      : `campaigns${query.toString() ? `?${query.toString()}` : ""}`;
+
+    const res = await ServerGet(url);
+    return res as GetCampaignsResponse;
+  } catch (error) {
+    console.error("Failed to get campaigns", error);
+    throw error;
   }
 };

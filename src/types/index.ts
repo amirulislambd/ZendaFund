@@ -10,14 +10,14 @@ export interface Campaign {
   rewardInfo: string;
   imageUrl: string;
   creatorEmail: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
 }
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'creator' | 'supporter' | 'Admin' | 'Creator' | 'Supporter';
+  role: "admin" | "creator" | "supporter" | "Admin" | "Creator" | "Supporter";
   credits: number;
   profilePic?: string;
 }
@@ -73,3 +73,22 @@ export interface CampaignFormData {
   reward_info: string;
   campaign_image_url: string;
 }
+
+export type CampaignQuery = {
+  q?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+  sort?: string;
+  topFunded?: boolean;
+};
+
+export type GetCampaignsResponse = {
+  campaigns: Array<{
+    id: string;
+    title: string;
+    coverImage: string;
+    totalAmountRaised: number;
+  }>;
+  maxRaisedAmount?: number;
+};

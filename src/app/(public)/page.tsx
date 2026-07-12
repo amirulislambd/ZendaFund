@@ -1,5 +1,4 @@
-import Footer from '@/components/layout/Footer';
-import Navbar from '@/components/layout/Navbar';
+
 import HeroSection from '@/components/sections/HeroSection';
 import { mockCampaigns } from '@/lib/data';
 import Link from 'next/link';
@@ -13,7 +12,7 @@ export default  function Home() {
       className="flex min-h-screen flex-col transition-colors duration-300"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
-      <Navbar />
+     
       <main className="flex-1">
         <HeroSection />
 
@@ -54,7 +53,7 @@ export default  function Home() {
         </section>
         <Toaster />
       </main>
-      <Footer />
+   
     </div>
   );
 }

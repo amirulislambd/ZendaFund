@@ -30,7 +30,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeInitializer />
+
         {children}
+
       </body>
     </html>
   );
