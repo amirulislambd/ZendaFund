@@ -9,24 +9,29 @@ import {
   DollarSign,
   Target,
   Tag,
-  FileText,
-  Gift,
   PlusCircle,
   CheckCircle2,
   ChevronDown,
 } from "lucide-react";
-import { CampaignFormData, CAMPAIGN_CATEGORIES } from "@/types";
+import { CampaignFormData, CAMPAIGN_CATEGORIES, User } from "@/types";
 import { AddNewCampaign } from "@/lib/actions/campaign";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 /**
  * ZendaFund - Add New Campaign Form (Client Component)
  * Tech Stack: Next.js, React, Tailwind CSS, React Hook Form, HeroUI v3, TypeScript
  */
 
-export default function AddCampaignForm() {
+type AddCampaignFormProps = {
+  user: User | null;
+};
+
+export default function AddCampaignForm({ user }: AddCampaignFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const {
     register,
@@ -54,10 +59,13 @@ export default function AddCampaignForm() {
 
     try {
       const API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY as string;
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${API_KEY}`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -71,28 +79,31 @@ export default function AddCampaignForm() {
   };
 
   const onSubmit: SubmitHandler<CampaignFormData> = async (data) => {
-    console.log("Submitting Campaign:", { ...data, status: "pending" });
-    console.log("Image URL:", data.campaign_image_url);
+    const AllData = {
+      ...data,
+      status: "pending",
+      creatorEmail: user?.email,
+      creatorName: user?.name,
+      creatorImage: user?.image,
+    };
 
-    // Simulate server response
-    const res = await AddNewCampaign({ ...data, status: "pending" });
+    const res = await AddNewCampaign({ ...AllData });
 
-    if(res.status === 400) {
+    if (!res) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
+
+    if (res.status === 400 || res.status === 500) {
       toast.error(res.message);
       return;
     }
 
-    if(res.status === 500) {
-      toast.error(res.message);
-      return;
-    }
-
-    toast.success(`Campaign submitted successfully! It will be visible after Admin approval.`);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    alert("Campaign submitted successfully! It will be visible after Admin approval.");
+    toast.success(
+      "Campaign submitted successfully! It will be visible after Admin approval.",
+    );
+    router.push("/dashboard/creator/campaigns");
   };
-
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -110,11 +121,16 @@ export default function AddCampaignForm() {
       >
         {/* Campaign Title */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Campaign Title</label>
+          <label className="text-xs font-semibold text-slate-300">
+            Campaign Title
+          </label>
           <div className="relative">
             <Target className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
-              {...register("campaign_title", { required: "Title is required", minLength: 10 })}
+              {...register("campaign_title", {
+                required: "Title is required",
+                minLength: 10,
+              })}
               placeholder="e.g., Help us build a solar-powered water pump"
               className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
             />
@@ -138,7 +154,9 @@ export default function AddCampaignForm() {
                   value={field.value}
                   onChange={(key) => field.onChange(key as string)}
                 >
-                  <Label className="text-xs font-semibold text-slate-300">Select Category</Label>
+                  <Label className="text-xs font-semibold text-slate-300">
+                    Select Category
+                  </Label>
                   <Select.Trigger className="mt-1.5 w-full flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all">
                     <Tag className="w-4 h-4 text-slate-500 shrink-0" />
                     <Select.Value className="flex-1 text-left" />
@@ -166,7 +184,9 @@ export default function AddCampaignForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Deadline</label>
+            <label className="text-xs font-semibold text-slate-300">
+              Deadline
+            </label>
             <div className="relative">
               <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
@@ -181,7 +201,9 @@ export default function AddCampaignForm() {
         {/* Funding Goal + Min Contribution */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Funding Goal</label>
+            <label className="text-xs font-semibold text-slate-300">
+              Funding Goal
+            </label>
             <div className="relative">
               <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
@@ -194,12 +216,17 @@ export default function AddCampaignForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Minimum Contribution</label>
+            <label className="text-xs font-semibold text-slate-300">
+              Minimum Contribution
+            </label>
             <div className="relative">
               <PlusCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="number"
-                {...register("minimum_contribution", { required: true, min: 1 })}
+                {...register("minimum_contribution", {
+                  required: true,
+                  min: 1,
+                })}
                 placeholder="10.00"
                 className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
               />
@@ -209,7 +236,9 @@ export default function AddCampaignForm() {
 
         {/* Campaign Story */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Campaign Story</label>
+          <label className="text-xs font-semibold text-slate-300">
+            Campaign Story
+          </label>
           <textarea
             {...register("campaign_story", { required: true, minLength: 50 })}
             rows={4}
@@ -220,7 +249,9 @@ export default function AddCampaignForm() {
 
         {/* Reward Info */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Reward Info</label>
+          <label className="text-xs font-semibold text-slate-300">
+            Reward Info
+          </label>
           <textarea
             {...register("reward_info", { required: true })}
             rows={3}
@@ -231,12 +262,18 @@ export default function AddCampaignForm() {
 
         {/* Campaign Image Upload */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Campaign Image Upload</label>
+          <label className="text-xs font-semibold text-slate-300">
+            Campaign Image Upload
+          </label>
 
           <div className="relative rounded-xl border border-white/10 overflow-hidden group">
             {imagePreview ? (
               <div className="relative aspect-video">
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <p className="text-white text-sm font-bold">Change Image</p>
                 </div>
@@ -249,12 +286,22 @@ export default function AddCampaignForm() {
                   className="absolute inset-0 w-full h-full opacity-40"
                   preserveAspectRatio="xMidYMax slice"
                 >
-                  <polygon points="0,200 90,70 150,140 210,50 300,200" fill="rgba(255,255,255,0.08)" />
-                  <polygon points="60,200 160,90 230,150 320,60 400,200" fill="rgba(16,185,129,0.15)" />
+                  <polygon
+                    points="0,200 90,70 150,140 210,50 300,200"
+                    fill="rgba(255,255,255,0.08)"
+                  />
+                  <polygon
+                    points="60,200 160,90 230,150 320,60 400,200"
+                    fill="rgba(16,185,129,0.15)"
+                  />
                 </svg>
                 <div className="relative z-10 text-center px-6">
-                  <p className="text-white font-bold text-sm mb-1">Start Your Crowdfunding Campaign</p>
-                  <p className="text-emerald-300/80 text-xs">Inspire Growth &nbsp;|&nbsp; Achieve Impact</p>
+                  <p className="text-white font-bold text-sm mb-1">
+                    Start Your Crowdfunding Campaign
+                  </p>
+                  <p className="text-emerald-300/80 text-xs">
+                    Inspire Growth &nbsp;|&nbsp; Achieve Impact
+                  </p>
                 </div>
               </div>
             )}
@@ -269,22 +316,35 @@ export default function AddCampaignForm() {
             {isUploading && (
               <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
                 <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mb-3" />
-                <p className="text-emerald-400 text-xs font-bold">Uploading...</p>
+                <p className="text-emerald-400 text-xs font-bold">
+                  Uploading...
+                </p>
               </div>
             )}
           </div>
 
           <p className="text-xs text-slate-500 text-center pt-1">
-            Drag and drop your hero image here, or use the button below to upload via ImgBB
+            Drag and drop your hero image here, or use the button below to
+            upload via ImgBB
           </p>
 
           <label className="flex items-center justify-center gap-2 mx-auto w-fit px-4 py-2 mt-1 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-slate-300 hover:bg-white/10 cursor-pointer transition-colors">
             <Upload className="w-3.5 h-3.5" />
             Upload via ImgBB
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
           </label>
 
-          <input type="hidden" {...register("campaign_image_url", { required: "Please upload an image" })} />
+          <input
+            type="hidden"
+            {...register("campaign_image_url", {
+              required: "Please upload an image",
+            })}
+          />
           {errors.campaign_image_url && (
             <p className="text-xs text-red-400 font-medium text-center">
               Hero image is required to launch your campaign.
@@ -297,8 +357,9 @@ export default function AddCampaignForm() {
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-3" />
           <p className="text-xs text-slate-400 py-3 leading-relaxed">
             Your campaign will be saved as{" "}
-            <span className="text-emerald-400 font-semibold">"Pending"</span> and visible to
-            supporters after Admin approval. Verification usually takes 24-48 hours.
+            <span className="text-emerald-400 font-semibold">"Pending"</span>{" "}
+            and visible to supporters after Admin approval. Verification usually
+            takes 24-48 hours.
           </p>
         </div>
 

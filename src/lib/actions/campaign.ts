@@ -1,4 +1,4 @@
-import type { Campaign, CampaignQuery } from "@/types";
+import type { Campaign, CampaignQuery, GetCampaignResponse } from "@/types";
 import { ServerGet, ServerMutation } from "../core/serverMutation";
 
 export type GetCampaignsResponse = {
@@ -17,6 +17,7 @@ export const AddNewCampaign = async (data: object) => {
     return res;
   } catch (error) {
     console.log("Failed to add new campaign", error);
+    return { status: 500, message: "Failed to reach server" };
   }
 };
 
@@ -61,6 +62,16 @@ export const GetCampaigns = async (
     return res as GetCampaignsResponse;
   } catch (error) {
     console.error("Failed to get campaigns", error);
+    throw error;
+  }
+};
+
+export const GetCampaign = async (id: string): Promise<GetCampaignResponse> => {
+  try {
+    const res = await ServerGet(`campaign/${id}`);
+    return res as GetCampaignResponse;
+  } catch (error) {
+    console.error("Failed to get campaign", error);
     throw error;
   }
 };

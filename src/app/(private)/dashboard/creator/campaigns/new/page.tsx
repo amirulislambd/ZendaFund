@@ -1,6 +1,7 @@
 import AddCampaignForm from "@/components/dashboard/creator/AddCampaignForm";
+import { UserSessionToSSR } from "@/lib/core/session";
+import { User } from "@/types";
 import type { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title: "Launch a New Campaign | ZendaFund",
@@ -32,6 +33,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AddNewCampaignPage() {
-  return <AddCampaignForm />;
+export default async function AddNewCampaignPage() {
+  const user = await UserSessionToSSR();
+  console.log(user);
+
+  return <AddCampaignForm user={user as User} />;
 }

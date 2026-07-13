@@ -1,30 +1,15 @@
 import { redirect } from "next/navigation";
 import { getToken } from "./session";
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-
-  if (process.env.NEXT_PUBLIC_BASE_URL?.trim()) {
-    return process.env.NEXT_PUBLIC_BASE_URL.trim();
-  }
-
-  return "http://localhost:3000";
-};
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL as string;
 
 const authHeader = async (): Promise<Record<string, string>> => {
   const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-const buildApiUrl = (url: string) => {
-  const baseUrl = getBaseUrl();
-  return `${baseUrl}/api/${url}`;
-};
-
 export const ServerGet = async (url: string) => {
-  const response = await fetch(buildApiUrl(url), {
+  const response = await fetch(`${baseUrl}/api/${url}`, {
     headers: {
       "Content-Type": "application/json",
       ...(await authHeader()),
@@ -38,7 +23,7 @@ export const ServerMutation = async (
   data: object,
   method = "POST",
 ) => {
-  const response = await fetch(buildApiUrl(url), {
+  const response = await fetch(`${baseUrl}/api/${url}`, {
     method: method,
     headers: {
       "Content-Type": "application/json",

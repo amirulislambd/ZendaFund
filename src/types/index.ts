@@ -1,25 +1,28 @@
 export interface Campaign {
-  id: string;
+  _id: string;
   title: string;
-  story: string;
+  description: string;
   category: string;
-  fundingGoal: number;
+  goal: number;
   minimumContribution: number;
   raisedAmount: number;
   deadline: string;
   rewardInfo: string;
   imageUrl: string;
-  creatorEmail: string;
   status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  updatedAt: string;
+  creatorEmail?: string;
+  creatorName?: string;
+  creatorImage?: string;
 }
-
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "creator" | "supporter" | "Admin" | "Creator" | "Supporter";
+  role: "admin" | "creator" | "supporter";
   credits: number;
-  profilePic?: string;
+  image?: string;
 }
 
 export interface AuthSessionUser {
@@ -91,4 +94,8 @@ export type GetCampaignsResponse = {
     totalAmountRaised: number;
   }>;
   maxRaisedAmount?: number;
+};
+
+export type GetCampaignResponse = {
+  campaign: Campaign;
 };
