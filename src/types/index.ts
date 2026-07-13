@@ -99,3 +99,20 @@ export type GetCampaignsResponse = {
 export type GetCampaignResponse = {
   campaign: Campaign;
 };
+
+export interface PurchaseCreditProps {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    credits: number;
+    role: string;
+    image?: string;
+  } | null;
+
+  packages: readonly {
+    id: string;
+    credits: number;
+    priceUsd: number;
+  }[];
+}
