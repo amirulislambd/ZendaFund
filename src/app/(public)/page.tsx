@@ -1,11 +1,21 @@
 import HeroSection from "@/components/sections/HeroSection";
 import CampaignCard from "@/components/shared/Campaigncard";
 
-import { mockCampaigns } from "@/lib/data";
+import { GetCampaigns } from "@/lib/actions/campaign";
+
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 
-export default function Home() {
+export default async function Home() {
+  // Use the regular listing endpoint (already proven to work on /explore)
+  // instead of the separate top-funded endpoint — it returns the full
+  // Campaign shape CampaignCard needs, and sorting by "raised" gives us
+  // the same "most funded first" effect for the featured section.
+  const { campaigns: featuredCampaigns } = await GetCampaigns({
+    limit: 6,
+    sort: "raised",
+  });
+
   return (
     <div
       className="flex min-h-screen flex-col transition-colors duration-300"
@@ -36,7 +46,7 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {mockCampaigns.map((campaign, index) => (
+            {featuredCampaigns.map((campaign, index) => (
               <CampaignCard
                 key={campaign._id}
                 campaign={campaign}

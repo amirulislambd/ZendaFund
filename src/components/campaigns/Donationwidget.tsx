@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import type { Campaign, User } from "@/types";
-import { Contribution } from "@/lib/actions/contribution";
 
 type DonationWidgetProps = {
   campaign: Campaign;
-  user: User;
+  user: User | null;
 };
 
 const PRESET_AMOUNTS = [10, 25, 50, 100];
@@ -22,6 +22,7 @@ export default function DonationWidget({
   const [customAmount, setCustomAmount] = useState("");
   const minContribution = campaign.minimumContribution ?? 1;
   const isBelowMinimum = amount < minContribution;
+  const isSupporter = user?.role === "supporter";
 
   const handlePresetClick = (value: number) => {
     setAmount(value);
@@ -36,27 +37,24 @@ export default function DonationWidget({
     }
   };
 
-  const userData = {
-    supporterName: user?.name,
-    supporterEmail: user?.email,
-    supporterImage: user?.image,
-  };
-
-  const handleContinue = async () => {
-    // TODO: hook this up to Stripe Checkout — create a session server-side
-    // with { campaignId: campaign._id, amount, userId: user.id } and redirect
-    // the browser to the returned session URL.
-    const data = {
-      campaignId: campaign._id,
-      creatorName: campaign.creatorName,
-      creatorEmail: campaign.creatorEmail,
-      amount,
-      ...userData,
-    };
-
-    const res = await Contribution({ data });
-    if (res) {
-      console.log(res);
+  const getRoleMessage = () => {
+    if (!user) return null;
+    switch (user.role) {
+      case "creator":
+        return "Creators cannot contribute to their own campaigns.";
+      case "admin":
+        return "Admin accounts cannot make contributions.";
+      default:
+        return (
+          <>
+            Contributions are only available for Supporter accounts. Your
+            account role is{" "}
+            <span className="font-semibold text-(--foreground)">
+              {user.role}
+            </span>
+            .
+          </>
+        );
     }
   };
 
@@ -79,9 +77,10 @@ export default function DonationWidget({
           <motion.button
             key={preset}
             type="button"
+            disabled={!isSupporter}
             whileTap={{ scale: 0.95 }}
             onClick={() => handlePresetClick(preset)}
-            className={`rounded-2xl border px-3 py-2.5 text-sm font-semibold transition-colors ${
+            className={`rounded-2xl border px-3 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
               amount === preset && customAmount === ""
                 ? "border-(--accent) bg-(--accent)/10 text-(--accent)"
                 : "border-(--border) bg-(--surface-muted) text-(--foreground) hover:border-(--accent)"
@@ -104,32 +103,73 @@ export default function DonationWidget({
             id="custom-amount"
             type="number"
             min={1}
+            disabled={!isSupporter}
             value={customAmount}
             onChange={(event) => handleCustomChange(event.target.value)}
             placeholder={`Min. ${minContribution}`}
-            className="w-full rounded-2xl border border-(--border) bg-(--surface-muted) px-4 py-3 text-(--foreground) outline-none transition focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20"
+            className="w-full rounded-2xl border border-(--border) bg-(--surface-muted) px-4 py-3 text-(--foreground) outline-none transition focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20 disabled:cursor-not-allowed disabled:opacity-40"
           />
         </div>
-        {isBelowMinimum && (
+        {isBelowMinimum && isSupporter && (
           <p className="mt-2 text-xs text-red-400">
             Minimum contribution is {minContribution.toLocaleString()} credits.
           </p>
         )}
       </div>
 
-      <motion.button
-        type="button"
-        disabled={isBelowMinimum || amount <= 0}
-        whileTap={{ scale: 0.97 }}
-        onClick={handleContinue}
-        className="mt-6 w-full rounded-2xl bg-(--accent) py-3 text-sm font-semibold text-(--surface) transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        Continue to secure payment →
-      </motion.button>
+      {!user ? (
+        <Link
+          href="/login"
+          className="mt-6 block w-full rounded-2xl bg-(--accent) py-3 text-center text-sm font-semibold text-(--surface) transition-opacity hover:opacity-90"
+        >
+          Log in to contribute
+        </Link>
+      ) : isSupporter ? (
+        <form action="/api/contribution-checkout" method="POST">
+          <input type="hidden" name="campaignId" value={campaign._id} />
+          <input type="hidden" name="campaignTitle" value={campaign.title} />
+          <input
+            type="hidden"
+            name="creatorName"
+            value={campaign.creatorName ?? ""}
+          />
+          <input
+            type="hidden"
+            name="creatorEmail"
+            value={campaign.creatorEmail ?? ""}
+          />
+          <input type="hidden" name="amount" value={amount} />
 
-      <p className="mt-3 text-center text-xs text-(--muted)">
-        Payments are securely processed by Stripe.
-      </p>
+          <motion.button
+            type="submit"
+            disabled={isBelowMinimum || amount <= 0}
+            whileTap={{ scale: 0.97 }}
+            className="mt-6 w-full rounded-2xl bg-(--accent) py-3 text-sm font-semibold text-(--surface) transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Contribute now →
+          </motion.button>
+        </form>
+      ) : (
+        <div>
+          <button
+            type="button"
+            disabled
+            className="mt-6 w-full cursor-not-allowed rounded-2xl bg-(--surface-muted) py-3 text-sm font-semibold text-(--muted) opacity-60"
+          >
+            Contribute now →
+          </button>
+          <p className="mt-3 text-center text-xs text-(--muted)">
+            {getRoleMessage()}
+          </p>
+        </div>
+      )}
+
+      {isSupporter && (
+        <p className="mt-3 text-center text-xs text-(--muted)">
+          Your contribution will be marked as pending until approved by the
+          creator.
+        </p>
+      )}
     </motion.div>
   );
 }
