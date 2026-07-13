@@ -116,7 +116,6 @@ export interface PurchaseCreditProps {
     priceUsd: number;
   }[];
 }
-
 export type Contribution = {
   id: string;
   campaign_id: string;
@@ -137,3 +136,4 @@ export type GetMyContributionsResponse = {
     pages: number;
   };
 };
+ 

@@ -4,8 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Contribution } from "@/types";
-import ContributionStatusBadge from "./Contributionstatusbadge";
-import Link from "next/link";
+import ContributionsTable from "@/components/shared/Contributionstable";
 
 type ContributionsViewProps = {
   contributions: Contribution[];
@@ -16,14 +15,6 @@ type ContributionsViewProps = {
     pages: number;
   };
 };
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 // Animates a number counting up from 0 to `value` whenever `value` changes.
 function CountUpNumber({ value }: { value: number }) {
@@ -44,7 +35,11 @@ function CountUpNumber({ value }: { value: number }) {
   return <>{display}</>;
 }
 
-function ContributionsHeader({ pagination }: { pagination: ContributionsViewProps["pagination"] }) {
+function ContributionsHeader({
+  pagination,
+}: {
+  pagination: ContributionsViewProps["pagination"];
+}) {
   const stats = [
     { label: "Total", value: pagination.total, color: "emerald" },
     { label: "Current", value: pagination.page, color: "sky" },
@@ -77,7 +72,7 @@ function ContributionsHeader({ pagination }: { pagination: ContributionsViewProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-8 rounded-3xl bg-(--card) px-8 pb-10 shadow-sm"
+      className="mb-8 rounded-3xl bg-(--card) px-8 py-10 shadow-sm"
     >
       <div className="flex flex-col items-center text-center">
         <motion.span
@@ -124,7 +119,11 @@ function ContributionsHeader({ pagination }: { pagination: ContributionsViewProp
                 key={stat.label}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.32 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.32 + index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 whileHover={{ y: -4 }}
                 className={`group rounded-2xl bg-(--background)/70 px-6 py-4 shadow-sm transition-colors duration-300 ${colors.hoverBg} hover:shadow-lg ${colors.hoverShadow}`}
               >
@@ -149,7 +148,10 @@ function ContributionsHeader({ pagination }: { pagination: ContributionsViewProp
   );
 }
 
-export default function ContributionsView({ contributions, pagination }: ContributionsViewProps) {
+export default function ContributionsView({
+  contributions,
+  pagination,
+}: ContributionsViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -167,200 +169,65 @@ export default function ContributionsView({ contributions, pagination }: Contrib
     <div>
       <ContributionsHeader pagination={pagination} />
 
-      {contributions.length === 0 ? (
-       <motion.div
-       initial={{ opacity: 0, y: 12 }}
-       animate={{ opacity: 1, y: 0 }}
-       transition={{ duration: 0.4 }}
-       className="relative overflow-hidden rounded-[28px] border border-(--border) bg-gradient-to-br from-(--surface) via-(--surface) to-emerald-500/10 px-8 py-10"
-     >
-       <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
-         <div className="text-left">
-           <span className="inline-flex items-center gap-2 text-sm font-medium text-emerald-400">
-             ✦ My Contributions
-           </span>
-     
-           <h3 className="mt-3 text-2xl font-bold text-(--foreground) sm:text-3xl">
-             No contributions yet.
-           </h3>
-     
-           <p className="mt-3 max-w-md text-sm leading-6 text-(--muted)">
-             Support a campaign you care about and it will show up here, with its
-             status and payment details.
-           </p>
-     
-           <motion.div whileTap={{ scale: 0.97 }} className="mt-6 inline-block">
-             <Link
-               href="/explore"
-               className="inline-flex items-center gap-2 rounded-2xl bg-(--accent) px-5 py-2.5 text-sm font-semibold text-(--surface) transition-opacity hover:opacity-90"
-             >
-               Explore Campaigns →
-             </Link>
-           </motion.div>
-         </div>
-     
-         <motion.div
-           initial={{ opacity: 0, y: 16 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.4, delay: 0.15 }}
-           className="flex shrink-0 items-center gap-4 rounded-2xl border border-(--border) bg-(--background)/70 px-6 py-5"
-         >
-           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
-             ✦
-           </span>
-           <div>
-             <p className="text-xs text-(--muted)">Current Total</p>
-             <p className="text-2xl font-bold text-(--foreground)">0</p>
-             <p className="text-xs text-emerald-400">Contributions</p>
-           </div>
-         </motion.div>
-       </div>
-     </motion.div>
-      ) : (
-        <motion.div
-          key={pagination.page}
-          animate={{ opacity: isPending ? 0.5 : 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Table — md and up */}
-          <div className="hidden overflow-hidden rounded-[28px] border border-(--border) bg-(--surface) md:block">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-(--border) bg-(--surface-muted) text-xs uppercase tracking-wide text-(--muted)">
-                    <th className="px-6 py-4 font-semibold">Campaign</th>
-                    <th className="px-6 py-4 font-semibold">Creator</th>
-                    <th className="px-6 py-4 font-semibold">Amount</th>
-                    <th className="px-6 py-4 font-semibold">Payment</th>
-                    <th className="px-6 py-4 font-semibold">Date</th>
-                    <th className="px-6 py-4 font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contributions.map((contribution, index) => (
-                    <motion.tr
-                      key={contribution.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.35,
-                        delay: Math.min(index, 8) * 0.04,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="border-b border-(--border) last:border-0 hover:bg-(--surface-muted)/60"
-                    >
-                      <td className="px-6 py-4 font-medium text-(--foreground)">
-                        {contribution.campaign_title}
-                      </td>
-                      <td className="px-6 py-4 text-(--muted)">{contribution.creator_name ?? "—"}</td>
-                      <td className="px-6 py-4 font-semibold text-(--foreground)">
-                        {contribution.Contribution_amount.toLocaleString()} credits
-                      </td>
-                      <td className="px-6 py-4 capitalize text-(--muted)">
-                        {contribution.paymentMethod ?? "—"}
-                      </td>
-                      <td className="px-6 py-4 text-(--muted)">{formatDate(contribution.current_date)}</td>
-                      <td className="px-6 py-4">
-                        <ContributionStatusBadge status={contribution.status} />
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+      <motion.div
+        key={pagination.page}
+        animate={{ opacity: isPending ? 0.5 : 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <ContributionsTable
+          contributions={contributions}
+          showPaymentMethod
+          showDate
+          emptyMessage="You haven't made any contributions yet."
+        />
+
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <nav className="mt-6 flex flex-col items-center gap-3 rounded-[28px] border border-(--border) bg-(--surface) p-4 shadow-sm sm:flex-row sm:justify-between">
+            <div className="text-sm text-(--muted)">
+              Showing page {pagination.page} of {pagination.pages} (
+              {pagination.total} contributions)
             </div>
-          </div>
 
-          {/* Cards — below md */}
-          <div className="flex flex-col gap-4 md:hidden">
-            {contributions.map((contribution, index) => (
-              <motion.div
-                key={contribution.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: Math.min(index, 8) * 0.05,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="rounded-3xl border border-(--border) bg-(--surface) p-5 shadow-sm"
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => goToPage(pagination.page - 1)}
+                disabled={pagination.page <= 1}
+                className="rounded-full border border-(--border) bg-(--surface-muted) px-4 py-2 text-sm text-(--foreground) transition hover:border-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-base font-semibold text-(--foreground)">
-                    {contribution.campaign_title}
-                  </h3>
-                  <ContributionStatusBadge status={contribution.status} />
-                </div>
-
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-(--muted)">Amount</span>
-                    <span className="font-semibold text-(--foreground)">
-                      {contribution.Contribution_amount.toLocaleString()} credits
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-(--muted)">Creator</span>
-                    <span className="text-(--foreground)">{contribution.creator_name ?? "—"}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-(--muted)">Payment</span>
-                    <span className="capitalize text-(--foreground)">
-                      {contribution.paymentMethod ?? "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-(--muted)">Date</span>
-                    <span className="text-(--foreground)">{formatDate(contribution.current_date)}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Pagination — shared by both layouts */}
-          {pagination.pages > 1 && (
-            <nav className="mt-6 flex flex-col items-center gap-3 rounded-[28px] border border-(--border) bg-(--surface) p-4 shadow-sm sm:flex-row sm:justify-between">
-              <div className="text-sm text-(--muted)">
-                Showing page {pagination.page} of {pagination.pages} ({pagination.total} contributions)
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <button
+                Previous
+              </button>
+              {Array.from(
+                { length: pagination.pages },
+                (_, index) => index + 1,
+              ).map((pageNumber) => (
+                <motion.button
+                  key={pageNumber}
                   type="button"
-                  onClick={() => goToPage(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                  className="rounded-full border border-(--border) bg-(--surface-muted) px-4 py-2 text-sm text-(--foreground) transition hover:border-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => goToPage(pageNumber)}
+                  className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                    pageNumber === pagination.page
+                      ? "bg-(--accent) text-(--surface)"
+                      : "border border-(--border) bg-(--surface-muted) text-(--foreground) hover:border-(--accent)"
+                  }`}
                 >
-                  Previous
-                </button>
-                {Array.from({ length: pagination.pages }, (_, index) => index + 1).map((pageNumber) => (
-                  <motion.button
-                    key={pageNumber}
-                    type="button"
-                    whileTap={{ scale: 0.92 }}
-                    onClick={() => goToPage(pageNumber)}
-                    className={`rounded-full px-4 py-2 text-sm transition-colors ${
-                      pageNumber === pagination.page
-                        ? "bg-(--accent) text-(--surface)"
-                        : "border border-(--border) bg-(--surface-muted) text-(--foreground) hover:border-(--accent)"
-                    }`}
-                  >
-                    {pageNumber}
-                  </motion.button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => goToPage(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.pages}
-                  className="rounded-full border border-(--border) bg-(--surface-muted) px-4 py-2 text-sm text-(--foreground) transition hover:border-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            </nav>
-          )}
-        </motion.div>
-      )}
+                  {pageNumber}
+                </motion.button>
+              ))}
+              <button
+                type="button"
+                onClick={() => goToPage(pagination.page + 1)}
+                disabled={pagination.page >= pagination.pages}
+                className="rounded-full border border-(--border) bg-(--surface-muted) px-4 py-2 text-sm text-(--foreground) transition hover:border-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </nav>
+        )}
+      </motion.div>
     </div>
   );
 }

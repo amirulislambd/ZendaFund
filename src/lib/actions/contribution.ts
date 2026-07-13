@@ -60,12 +60,17 @@ export const ContributeWithCredits = async (data: {
 };
 
 export const GetMyContributions = async (
-  params: { page?: number; limit?: number } = {},
+  params: {
+    page?: number;
+    limit?: number;
+    status?: "pending" | "approved" | "rejected";
+  } = {},
 ): Promise<GetMyContributionsResponse> => {
   try {
     const query = new URLSearchParams();
     if (params.page) query.set("page", String(params.page));
     if (params.limit) query.set("limit", String(params.limit));
+    if (params.status) query.set("status", params.status);
 
     const url = `contributions/my-contributions${query.toString() ? `?${query.toString()}` : ""}`;
     const res = await ServerGet(url);
