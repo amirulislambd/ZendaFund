@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: "usd",
             product_data: { name: `Contribution to ${campaignTitle}` },
             unit_amount: amount * 100,
           },
           quantity: 1,
         },
       ],
-      mode: 'payment',
+      mode: "payment",
       customer_email: user.email,
       metadata: {
         campaignId,
@@ -45,10 +45,11 @@ export async function POST(req: NextRequest) {
         supporterEmail: user.email,
         supporterName: user.name,
         amount: String(amount),
+        paymentMethod: "card",
       },
       success_url: `${origin}/explore/${campaignId}/contribute-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/explore/${campaignId}`,
-    })
+    });
 
     return NextResponse.redirect(session.url as string, 303)
   } catch (err: any) {

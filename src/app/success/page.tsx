@@ -29,7 +29,6 @@ export default async function Success({ searchParams }: SuccessPageProps) {
     const credits = Number(session.metadata?.credits ?? 0)
     const amountUsd = (session.amount_total ?? 0) / 100
 
-    // Stripe থেকে পাওয়া info + আমাদের site এর user info একসাথে backend এ পাঠাচ্ছি
     await ConfirmCreditPurchase({
       supporterEmail: customerEmail,
       credits,

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import type { Campaign, User } from "@/types";
+import { useRouter } from "next/navigation";
+import { ContributeWithCredits } from "@/lib/actions/contribution";
 
 type DonationWidgetProps = {
   campaign: Campaign;
@@ -20,9 +22,20 @@ export default function DonationWidget({
     Math.max(campaign.minimumContribution ?? 1, PRESET_AMOUNTS[0]),
   );
   const [customAmount, setCustomAmount] = useState("");
+
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "credits">(
+    "credits",
+  );
+
   const minContribution = campaign.minimumContribution ?? 1;
   const isBelowMinimum = amount < minContribution;
   const isSupporter = user?.role === "supporter";
+
+  const availableCredits = user?.credits ?? 0;
+
+  const hasEnoughCredits = availableCredits >= amount;
+
+  const router = useRouter();
 
   const handlePresetClick = (value: number) => {
     setAmount(value);
@@ -47,14 +60,46 @@ export default function DonationWidget({
       default:
         return (
           <>
-            Contributions are only available for Supporter accounts. Your
-            account role is{" "}
+            Contributions are only available for{" "}
+            <span className="font-semibold text-(--foreground)">supporter</span>{" "}
+            accounts. Your account role is{" "}
             <span className="font-semibold text-(--foreground)">
               {user.role}
             </span>
             .
           </>
         );
+    }
+  };
+
+  const handleCreditContribution = async () => {
+    if (!user) return;
+
+    const res = await ContributeWithCredits({
+      campaign_id: campaign._id,
+      campaign_title: campaign.title,
+
+      Contribution_amount: amount,
+
+      Supporter_email: user.email,
+      Supporter_name: user.name,
+
+      creator_name: campaign.creatorName ?? "",
+      creator_email: campaign.creatorEmail ?? "",
+
+      current_date: new Date().toISOString(),
+
+      status: "pending",
+
+      paymentMethod: "credits",
+    });
+
+    if (res?.success) {
+      router.push(
+        `/explore/${campaign._id}/contribute-success?payment=credits`,
+      );
+    } else {
+      alert(res?.message || "Contribution failed");
     }
   };
 
@@ -115,6 +160,79 @@ export default function DonationWidget({
             Minimum contribution is {minContribution.toLocaleString()} credits.
           </p>
         )}
+
+        {isSupporter && (
+          <div className="mt-6">
+            <h4 className="mb-3 text-sm font-semibold text-(--foreground)">
+              Choose Payment Method
+            </h4>
+
+            <div className="space-y-3">
+              {/* Credit */}
+
+              <label
+                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-all ${
+                  paymentMethod === "credits"
+                    ? "border-(--accent) bg-(--accent)/10"
+                    : "border-(--border) hover:border-(--accent)"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === "credits"}
+                    onChange={() => setPaymentMethod("credits")}
+                  />
+
+                  <div>
+                    <p className="font-semibold text-(--foreground)">
+                      Use My Credits
+                    </p>
+
+                    <p className="text-xs text-(--muted)">
+                      Available: {availableCredits} credits
+                    </p>
+                  </div>
+                </div>
+              </label>
+
+              {/* Stripe */}
+
+              <label
+                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-all ${
+                  paymentMethod === "card"
+                    ? "border-(--accent) bg-(--accent)/10"
+                    : "border-(--border) hover:border-(--accent)"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    checked={paymentMethod === "card"}
+                    onChange={() => setPaymentMethod("card")}
+                  />
+
+                  <div>
+                    <p className="font-semibold text-(--foreground)">
+                      Pay with Card
+                    </p>
+
+                    <p className="text-xs text-(--muted)">
+                      Stripe Secure Checkout
+                    </p>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            {paymentMethod === "credits" && !hasEnoughCredits && (
+              <p className="mt-3 text-xs text-red-500">
+                You don't have enough credits for this contribution.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {!user ? (
@@ -125,30 +243,46 @@ export default function DonationWidget({
           Log in to contribute
         </Link>
       ) : isSupporter ? (
-        <form action="/api/contribution-checkout" method="POST">
-          <input type="hidden" name="campaignId" value={campaign._id} />
-          <input type="hidden" name="campaignTitle" value={campaign.title} />
-          <input
-            type="hidden"
-            name="creatorName"
-            value={campaign.creatorName ?? ""}
-          />
-          <input
-            type="hidden"
-            name="creatorEmail"
-            value={campaign.creatorEmail ?? ""}
-          />
-          <input type="hidden" name="amount" value={amount} />
+        paymentMethod === "card" ? (
+          <form action="/api/contribution-checkout" method="POST">
+            <input type="hidden" name="campaignId" value={campaign._id} />
 
+            <input type="hidden" name="campaignTitle" value={campaign.title} />
+
+            <input
+              type="hidden"
+              name="creatorName"
+              value={campaign.creatorName ?? ""}
+            />
+
+            <input
+              type="hidden"
+              name="creatorEmail"
+              value={campaign.creatorEmail ?? ""}
+            />
+
+            <input type="hidden" name="amount" value={amount} />
+
+            <motion.button
+              type="submit"
+              disabled={isBelowMinimum || amount <= 0}
+              whileTap={{ scale: 0.97 }}
+              className="mt-6 w-full rounded-2xl bg-(--accent) py-3 text-sm font-semibold text-(--surface) transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Pay with Card
+            </motion.button>
+          </form>
+        ) : (
           <motion.button
-            type="submit"
-            disabled={isBelowMinimum || amount <= 0}
+            type="button"
+            onClick={handleCreditContribution}
+            disabled={isBelowMinimum || amount <= 0 || !hasEnoughCredits}
             whileTap={{ scale: 0.97 }}
             className="mt-6 w-full rounded-2xl bg-(--accent) py-3 text-sm font-semibold text-(--surface) transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Contribute now →
+            Pay with Credits
           </motion.button>
-        </form>
+        )
       ) : (
         <div>
           <button

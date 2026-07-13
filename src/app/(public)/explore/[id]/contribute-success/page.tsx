@@ -1,55 +1,131 @@
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { stripe } from '@/lib/stripe'
-import { ConfirmContribution } from '@/lib/actions/contribution'
-import { GetCampaign } from '@/lib/actions/campaign'
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { stripe } from "@/lib/stripe";
+import { ConfirmContribution } from "@/lib/actions/contribution";
+import { GetCampaign } from "@/lib/actions/campaign";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 interface ContributeSuccessPageProps {
-  params: Promise<{ id: string }>
-  searchParams: Promise<{ session_id?: string }>
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    session_id?: string;
+    payment?: "card" | "credits";
+  }>;
 }
-
 export default async function ContributeSuccessPage({
   params,
   searchParams,
 }: ContributeSuccessPageProps) {
-  const { id } = await params
-  const { session_id } = await searchParams
+  const { id } = await params;
+  const { session_id, payment } = await searchParams;
 
+  if (payment !== "credits" && !session_id) {
+    throw new Error("Missing payment information.");
+  }
+
+  if (payment === "credits") {
+    const { campaign } = await GetCampaign(id);
+
+    return (
+      <main className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-2xl border border-(--border) bg-(--surface) p-8 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10">
+            <svg
+              className="h-7 w-7 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+
+          <h1 className="text-2xl font-semibold">Contribution Successful</h1>
+
+          <p className="mt-3 text-(--muted)">
+            Your contribution has been submitted using your credits.
+          </p>
+
+          <div className="mt-6 rounded-xl bg-(--surface-muted) p-5">
+            <div className="flex justify-between">
+              <span>Campaign</span>
+              <span>{campaign.title}</span>
+            </div>
+
+            <div className="mt-3 flex justify-between">
+              <span>Payment Method</span>
+              <span>Wallet Credits</span>
+            </div>
+
+            <div className="mt-3 flex justify-between">
+              <span>Status</span>
+              <span>Pending Approval</span>
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-3">
+            <Link
+              href={`/explore/${id}`}
+              className="flex-1 rounded-xl border py-3 text-center"
+            >
+              View Campaign
+            </Link>
+
+            <Link
+              href="/dashboard/supporter/my-contributions"
+              className="flex-1 rounded-xl bg-(--accent) py-3 text-center text-white"
+            >
+              My Contributions
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
   if (!session_id) {
-    throw new Error('Please provide a valid session_id (`cs_test_...`)')
+    throw new Error("Missing Stripe session id");
+  }
+  const session = await stripe.checkout.sessions.retrieve(session_id);
+
+  if (session.status === "open") {
+    return redirect(`/explore/${id}`);
   }
 
-  const session = await stripe.checkout.sessions.retrieve(session_id)
-
-  if (session.status === 'open') {
-    return redirect(`/explore/${id}`)
-  }
-
-  if (session.status === 'complete') {
-    const meta = session.metadata
+  if (session.status === "complete") {
+    const meta = session.metadata;
 
     await ConfirmContribution({
       campaign_id: meta?.campaignId ?? id,
-      campaign_title: meta?.campaignTitle ?? '',
+      campaign_title: meta?.campaignTitle ?? "",
       Contribution_amount: Number(meta?.amount ?? 0),
-      Supporter_email: meta?.supporterEmail ?? '',
-      Supporter_name: meta?.supporterName ?? '',
-      creator_name: meta?.creatorName ?? '',
-      creator_email: meta?.creatorEmail ?? '',
-      current_date: new Date().toISOString(),
-      status: 'pending',
-      stripeSessionId: session.id,
-    })
 
-    let campaignImage: string | undefined
+      Supporter_email: meta?.supporterEmail ?? "",
+      Supporter_name: meta?.supporterName ?? "",
+
+      creator_name: meta?.creatorName ?? "",
+      creator_email: meta?.creatorEmail ?? "",
+
+      current_date: new Date().toISOString(),
+
+      status: "pending",
+
+      paymentMethod: "card",
+
+      stripeSessionId: session.id,
+    });
+
+    let campaignImage: string | undefined;
     try {
-      const { campaign } = await GetCampaign(id)
-      campaignImage = campaign?.imageUrl
+      const { campaign } = await GetCampaign(id);
+      campaignImage = campaign?.imageUrl;
     } catch {
-      campaignImage = undefined
+      campaignImage = undefined;
     }
 
     return (
@@ -59,7 +135,7 @@ export default async function ContributeSuccessPage({
             <div className="mx-auto mb-5 h-32 w-32 overflow-hidden rounded-2xl ring-4 ring-green-500/10">
               <img
                 src={campaignImage}
-                alt={meta?.campaignTitle ?? 'Campaign'}
+                alt={meta?.campaignTitle ?? "Campaign"}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -72,7 +148,11 @@ export default async function ContributeSuccessPage({
                 stroke="currentColor"
                 strokeWidth={2.5}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
           )}
@@ -112,7 +192,8 @@ export default async function ContributeSuccessPage({
           </div>
 
           <p className="mt-5 text-xs leading-relaxed text-(--muted)">
-            The creator will review this contribution. You'll see it reflected once approved.
+            The creator will review this contribution. You'll see it reflected
+            once approved.
           </p>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
@@ -131,8 +212,8 @@ export default async function ContributeSuccessPage({
           </div>
         </div>
       </main>
-    )
+    );
   }
 
-  return null
+  return null;
 }
