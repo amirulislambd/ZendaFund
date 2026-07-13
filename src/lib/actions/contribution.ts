@@ -1,5 +1,6 @@
 "use server";
-import { ServerMutation } from "../core/serverMutation";
+import { GetMyContributionsResponse } from "@/types";
+import { ServerGet, ServerMutation } from "../core/serverMutation";
 
 export const ConfirmContribution = async (data: {
   campaign_id: string;
@@ -55,5 +56,22 @@ export const ContributeWithCredits = async (data: {
       success: false,
       message: "Failed to contribute using credits",
     };
+  }
+};
+
+export const GetMyContributions = async (
+  params: { page?: number; limit?: number } = {},
+): Promise<GetMyContributionsResponse> => {
+  try {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", String(params.page));
+    if (params.limit) query.set("limit", String(params.limit));
+
+    const url = `contributions/my-contributions${query.toString() ? `?${query.toString()}` : ""}`;
+    const res = await ServerGet(url);
+    return res as GetMyContributionsResponse;
+  } catch (error) {
+    console.error("Failed to get my contributions", error);
+    throw error;
   }
 };

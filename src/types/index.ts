@@ -116,3 +116,24 @@ export interface PurchaseCreditProps {
     priceUsd: number;
   }[];
 }
+
+export type Contribution = {
+  id: string;
+  campaign_id: string;
+  campaign_title: string;
+  Contribution_amount: number;
+  paymentMethod?: "card" | "credits" | null;
+  creator_name?: string;
+  current_date: string;
+  status: "pending" | "approved" | "rejected";
+};
+
+export type GetMyContributionsResponse = {
+  contributions: Contribution[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+};
