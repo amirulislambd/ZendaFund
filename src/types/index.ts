@@ -147,3 +147,9 @@ export interface Payment {
   status: string;
   createdAt: string;
 }
+
+export interface SupporterStats {
+  totalContributions: number;
+  pendingContributions: number;
+  totalAmountContributed: number;
+}
