@@ -136,7 +136,7 @@ export type Contribution = {
   current_date: string;
 
   status: "pending" | "approved" | "rejected";
-
+  message?: string;
   rejectionReason?: string;
 };
 export type GetMyContributionsResponse = {
