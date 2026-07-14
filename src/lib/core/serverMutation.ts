@@ -15,6 +15,7 @@ export const ServerGet = async (url: string) => {
       ...(await authHeader()),
     },
   });
+  // console.log(response);
   return handleStatusCode(response);
 };
 

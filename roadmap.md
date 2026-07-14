@@ -121,8 +121,8 @@ This roadmap is built to satisfy two separate briefs at the same time:
 
 ### Explore Page (`/explore`)
 - [x] Basic card grid exists
-- [ ] Connect to real DB data (approved campaigns)
-- [ ] Make search & category filter functional
+- [x] Connect to real DB data (approved campaigns)
+- [x] Make search & category filter functional
 - [ ] Add sort: by deadline / by amount raised / by newest
 - [ ] Add skeleton loader while data loads
 - [ ] Show progress bar on each card
@@ -130,9 +130,9 @@ This roadmap is built to satisfy two separate briefs at the same time:
 - [ ] Implement pagination (or infinite scroll)
 
 ### Campaign Details Page (`/campaign/[id]`)
-- [ ] Show all campaign fields (image, title, goal, raised, etc.)
-- [ ] Contribution form (only for logged-in Supporters)
-- [ ] Save contribution: date, amount, status "pending", deduct credits
+- [x] Show all campaign fields (image, title, goal, raised, etc.)
+- [x] Contribution form (only for logged-in Supporters)
+- [x] Save contribution: date, amount, status "pending", deduct credits
 - [ ] Deadline countdown timer
 - [ ] Related campaigns section (same category)
 

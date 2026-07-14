@@ -80,3 +80,21 @@ export const GetMyContributions = async (
     throw error;
   }
 };
+
+export const ApproveContribution = async (id: string) => {
+  try {
+    return await ServerMutation(`contributions/${id}/approve`, {}, "PATCH");
+  } catch (error) {
+    console.error("Failed to approve contribution", error);
+    return { status: 500, message: "Failed to approve" };
+  }
+};
+
+export const RejectContribution = async (id: string) => {
+  try {
+    return await ServerMutation(`contributions/${id}/reject`, {}, "PATCH");
+  } catch (error) {
+    console.error("Failed to reject contribution", error);
+    return { status: 500, message: "Failed to reject" };
+  }
+};

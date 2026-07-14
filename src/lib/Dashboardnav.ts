@@ -14,6 +14,7 @@ import {
   BarChart3,
   type LucideIcon,
   CheckCircle2,
+  ClipboardCheck,
 } from "lucide-react";
 
 export type DashboardRole = "Supporter" | "Creator" | "Admin";
@@ -81,9 +82,16 @@ export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
     },
     {
       label: "My Campaigns",
-      href: "/dashboard/creator/campaigns",
+      href: "/dashboard/creator/campaigns/myCampaigns",
       icon: Layers,
     },
+
+    {
+      label: "Contributions to Review",
+      href: "/dashboard/creator/contributionsToReview",
+      icon: ClipboardCheck,
+    },
+
     {
       label: "Withdrawals",
       href: "/dashboard/creator/withdrawals",

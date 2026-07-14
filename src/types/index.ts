@@ -119,15 +119,26 @@ export interface PurchaseCreditProps {
 }
 export type Contribution = {
   id: string;
+
   campaign_id: string;
   campaign_title: string;
-  Contribution_amount: number;
-  paymentMethod?: "card" | "credits" | null;
-  creator_name?: string;
-  current_date: string;
-  status: "pending" | "approved" | "rejected";
-};
 
+  Contribution_amount: number;
+
+  paymentMethod?: "card" | "credits" | null;
+
+  Supporter_name?: string;
+  Supporter_email?: string;
+
+  creator_name?: string;
+  creator_email?: string;
+
+  current_date: string;
+
+  status: "pending" | "approved" | "rejected";
+
+  rejectionReason?: string;
+};
 export type GetMyContributionsResponse = {
   contributions: Contribution[];
   pagination: {

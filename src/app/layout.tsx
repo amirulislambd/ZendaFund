@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ZendaFund | Crowdfunding for Real Impact",
-  description: "A modern crowdfunding platform for creators, supporters, and admins.",
+  description:
+    "A modern crowdfunding platform for creators, supporters, and admins.",
 };
 
 export default function RootLayout({
@@ -32,7 +33,6 @@ export default function RootLayout({
         <ThemeInitializer />
 
         {children}
-
       </body>
     </html>
   );
