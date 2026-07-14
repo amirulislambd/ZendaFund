@@ -41,113 +41,80 @@ function ContributionsHeader({
   pagination: ContributionsViewProps["pagination"];
 }) {
   const stats = [
-    { label: "Total", value: pagination.total, color: "emerald" },
-    { label: "Current", value: pagination.page, color: "sky" },
-    { label: "Pages", value: pagination.pages, color: "violet" },
-  ] as const;
-
-  const colorClasses = {
-    emerald: {
-      text: "text-emerald-400",
-      hoverText: "group-hover:text-emerald-300",
-      hoverBg: "hover:bg-emerald-500/10",
-      hoverShadow: "hover:shadow-emerald-500/10",
+    {
+      label: "Total Contributions",
+      value: pagination.total,
+      color: "text-cyan-400",
     },
-    sky: {
-      text: "text-sky-400",
-      hoverText: "group-hover:text-sky-300",
-      hoverBg: "hover:bg-sky-500/10",
-      hoverShadow: "hover:shadow-sky-500/10",
+    {
+      label: "Current Page",
+      value: pagination.page,
+      color: "text-emerald-400",
     },
-    violet: {
-      text: "text-violet-400",
-      hoverText: "group-hover:text-violet-300",
-      hoverBg: "hover:bg-violet-500/10",
-      hoverShadow: "hover:shadow-violet-500/10",
+    {
+      label: "Total Pages",
+      value: pagination.pages,
+      color: "text-violet-400",
     },
-  } as const;
+  ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
+    <motion.section
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-8 rounded-3xl bg-(--card) px-8 py-10 shadow-sm"
+      transition={{ duration: 0.45 }}
+      className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#050d2a] via-[#071331] to-[#0a2a45]"
     >
-      <div className="flex flex-col items-center text-center">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.05 }}
-          className="inline-flex items-center rounded-full bg-emerald-500/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-400"
-        >
-          ✦ SUPPORTER DASHBOARD
-        </motion.span>
+      {/* Background Accent */}
+      <div className="absolute inset-y-0 right-0 w-[35%] bg-gradient-to-l from-cyan-800/20 via-sky-900/15 to-transparent" />
+      <div className="absolute -right-28 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
 
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.12 }}
-          className="mt-5 text-4xl font-bold tracking-tight text-(--foreground) md:text-5xl"
-        >
-          My Contributions
-        </motion.h1>
+      <div className="relative z-10 flex flex-col gap-10 p-8 lg:flex-row lg:items-center lg:justify-between">
+        {/* Left */}
+        <div className="max-w-2xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400">
+            ✦ My Contributions
+          </div>
 
-        <motion.div
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 64, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-4 h-1 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
-        />
+          <h1 className="text-3xl font-bold leading-tight text-white md:text-5xl">
+            Keep track of every
+            <br />
+            contribution you've made.
+          </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
-          className="mt-5 max-w-2xl text-sm leading-7 text-(--muted) md:text-base"
-        >
-          View all your contributions in one place. Track your donations,
-          payment methods, campaign details, and monitor your overall impact.
-        </motion.p>
+          <p className="mt-5 max-w-xl text-base leading-7 text-slate-300">
+            View your contribution history, payment methods, campaign details,
+            and monitor the impact you've made by supporting creators.
+          </p>
+        </div>
 
-        {/* Small Stats */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          {stats.map((stat, index) => {
-            const colors = colorClasses[stat.color];
-            return (
-              <motion.div
+        {/* Right Card */}
+        <div className="w-full max-w-sm rounded-2xl border border-cyan-500/20 bg-[#07162e]/80 p-6 backdrop-blur-md">
+          <div className="space-y-5">
+            {stats.map((stat) => (
+              <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: 0.32 + index * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                whileHover={{ y: -4 }}
-                className={`group rounded-2xl bg-(--background)/70 px-6 py-4 shadow-sm transition-colors duration-300 ${colors.hoverBg} hover:shadow-lg ${colors.hoverShadow}`}
+                className="flex items-center justify-between"
               >
-                <p
-                  className={`text-xs uppercase tracking-wider text-(--muted) transition-colors duration-300 ${colors.hoverText}`}
-                >
-                  {stat.label}
-                </p>
+                <span className="text-sm text-slate-300">{stat.label}</span>
 
-                <motion.h3
-                  whileHover={{ scale: 1.1 }}
-                  className={`mt-1 text-3xl font-bold ${colors.text}`}
-                >
+                <span className={`text-3xl font-bold ${stat.color}`}>
                   <CountUpNumber value={stat.value} />
-                </motion.h3>
-              </motion.div>
-            );
-          })}
+                </span>
+              </div>
+            ))}
+
+            <div className="pt-3 border-t border-white/10">
+              <p className="text-center text-sm font-medium text-cyan-400">
+                Contribution Overview
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
-
 export default function ContributionsView({
   contributions,
   pagination,

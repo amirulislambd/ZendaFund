@@ -28,7 +28,7 @@ export default async function ContributionPage({
   });
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
+    <div>
       {/* Table */}
       <div className="mt-6">
         <ContributionsView

@@ -53,6 +53,7 @@ export const GetCampaigns = async (
     if (params.page) query.set("page", String(params.page));
     if (params.limit) query.set("limit", String(params.limit));
     if (params.sort) query.set("sort", params.sort);
+    if (params.activeOnly) query.set("activeOnly", "true");
 
     const url = params.topFunded
       ? "campaigns/top-funded"
@@ -65,7 +66,6 @@ export const GetCampaigns = async (
     throw error;
   }
 };
-
 export const GetCampaign = async (id: string): Promise<GetCampaignResponse> => {
   try {
     const res = await ServerGet(`campaign/${id}`);
@@ -75,3 +75,4 @@ export const GetCampaign = async (id: string): Promise<GetCampaignResponse> => {
     throw error;
   }
 };
+

@@ -84,6 +84,7 @@ export type CampaignQuery = {
   limit?: number;
   sort?: string;
   topFunded?: boolean;
+  activeOnly?: boolean;
 };
 
 export type GetCampaignsResponse = {
@@ -136,4 +137,13 @@ export type GetMyContributionsResponse = {
     pages: number;
   };
 };
- 
+
+export interface Payment {
+  _id: string;
+  supporterEmail: string;
+  credits: number;
+  amountUsd: number;
+  stripeSessionId: string;
+  status: string;
+  createdAt: string;
+}
