@@ -7,6 +7,8 @@ import { Eye, CheckCircle2, XCircle, CreditCard } from "lucide-react";
 import { Contribution } from "@/types";
 import { useState } from "react";
 import ContributionDetailsModal from "@/components/ui/ContributionDetailsModal";
+import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
+import { ApproveContribution } from "@/lib/actions/contribution";
 
 interface Pagination {
   page: number;
@@ -28,7 +30,8 @@ export default function PendingContributionsTable({
     useState<Contribution | null>(null);
 
   const [openModal, setOpenModal] = useState(false);
-
+  const [approveOpen, setApproveOpen] = useState(false);
+  console.log(contributions);
   if (!contributions?.length) {
     return (
       <motion.div
@@ -161,7 +164,13 @@ export default function PendingContributionsTable({
                   View
                 </button>
 
-                <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500 px-3 py-2 text-sm font-medium text-green-500 transition hover:bg-green-500 hover:text-white">
+                <button
+                  onClick={() => {
+                    setSelectedContribution(contribution);
+                    setApproveOpen(true);
+                  }}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500 px-3 py-2 text-sm font-medium text-green-500 transition hover:bg-green-500 hover:text-white"
+                >
                   <CheckCircle2 size={16} />
                   Approve
                 </button>
@@ -275,6 +284,10 @@ export default function PendingContributionsTable({
 
                       {/* Approve */}
                       <button
+                        onClick={() => {
+                          setSelectedContribution(contribution);
+                          setApproveOpen(true);
+                        }}
                         className="
       flex h-10 w-10 items-center justify-center
       rounded-xl
@@ -352,6 +365,22 @@ export default function PendingContributionsTable({
         contribution={selectedContribution}
         open={openModal}
         onClose={() => setOpenModal(false)}
+      />
+
+      <DynamicConfirmModal
+        isOpen={approveOpen}
+        onClose={() => setApproveOpen(false)}
+        onConfirm={async () => {
+          if (!selectedContribution) return;
+
+          await ApproveContribution(selectedContribution.id);
+
+          setApproveOpen(false);
+        }}
+        title="Approve Contribution"
+        description={`Are you sure you want to approve the contribution from ${selectedContribution?.Supporter_name}? This amount will be added to the campaign raised total.`}
+        confirmText="Approve"
+        variant="success"
       />
     </div>
   );

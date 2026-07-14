@@ -5,20 +5,15 @@ import { ServerGet, ServerMutation } from "../core/serverMutation";
 export const ConfirmContribution = async (data: {
   campaign_id: string;
   campaign_title: string;
-  Contribution_amount: number;
-
+  amountUsd: number;
   Supporter_email: string;
   Supporter_name: string;
-
   creator_name: string;
   creator_email: string;
-
   current_date: string;
   status: string;
-
-  paymentMethod: "card" | "credits";
-
-  stripeSessionId?: string;
+  paymentMethod: "card";
+  stripeSessionId: string;
 }) => {
   try {
     const res = await ServerMutation("contribution", data);
@@ -81,12 +76,17 @@ export const GetMyContributions = async (
   }
 };
 
-export const ApproveContribution = async (id: string) => {
+export const ApproveContribution = async (contributionId: string) => {
   try {
-    return await ServerMutation(`contributions/${id}/approve`, {}, "PATCH");
+    const response = await ServerMutation(
+      `creator/contributions/${contributionId}/approve`,
+      {},
+      "PATCH",
+    );
+    return response;
   } catch (error) {
     console.error("Failed to approve contribution", error);
-    return { status: 500, message: "Failed to approve" };
+    throw error;
   }
 };
 

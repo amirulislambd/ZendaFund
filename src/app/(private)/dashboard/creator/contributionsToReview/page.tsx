@@ -1,6 +1,5 @@
 import PendingContributionsTable from "@/components/dashboard/creator/PendingContributionsTable";
 import { GetMyContributions } from "@/lib/actions/contribution";
-import { GetPendingContributions } from "@/lib/api/contribution";
 
 interface Props {
   searchParams: Promise<{ page?: string }>;

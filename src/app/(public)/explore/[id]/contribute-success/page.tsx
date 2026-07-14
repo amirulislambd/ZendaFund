@@ -13,6 +13,7 @@ interface ContributeSuccessPageProps {
     payment?: "card" | "credits";
   }>;
 }
+
 export default async function ContributeSuccessPage({
   params,
   searchParams,
@@ -78,7 +79,7 @@ export default async function ContributeSuccessPage({
             </Link>
 
             <Link
-              href="/dashboard/supporter/my-contributions"
+              href="/dashboard/supporter/contributions"
               className="flex-1 rounded-xl bg-(--accent) py-3 text-center text-white"
             >
               My Contributions
@@ -88,9 +89,11 @@ export default async function ContributeSuccessPage({
       </main>
     );
   }
+
   if (!session_id) {
     throw new Error("Missing Stripe session id");
   }
+
   const session = await stripe.checkout.sessions.retrieve(session_id);
 
   if (session.status === "open") {
@@ -99,26 +102,24 @@ export default async function ContributeSuccessPage({
 
   if (session.status === "complete") {
     const meta = session.metadata;
+    const amountUsd = (session.amount_total ?? 0) / 100;
 
-    await ConfirmContribution({
+    const confirmResult = await ConfirmContribution({
       campaign_id: meta?.campaignId ?? id,
       campaign_title: meta?.campaignTitle ?? "",
-      Contribution_amount: Number(meta?.amount ?? 0),
-
+      amountUsd,
       Supporter_email: meta?.supporterEmail ?? "",
       Supporter_name: meta?.supporterName ?? "",
-
       creator_name: meta?.creatorName ?? "",
       creator_email: meta?.creatorEmail ?? "",
-
       current_date: new Date().toISOString(),
-
       status: "pending",
-
       paymentMethod: "card",
-
       stripeSessionId: session.id,
     });
+
+    const creditsAwarded =
+      confirmResult?.contribution?.Contribution_amount ?? 0;
 
     let campaignImage: string | undefined;
     try {
@@ -168,7 +169,13 @@ export default async function ContributeSuccessPage({
             <div className="mb-3 flex items-center justify-between border-b border-(--border) pb-3">
               <span className="text-xs text-(--muted)">Amount</span>
               <span className="text-xl font-semibold text-(--foreground)">
-                {meta?.amount} credits
+                {creditsAwarded} credits
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-xs text-(--muted)">Charged</span>
+              <span className="text-xs font-medium text-(--foreground)">
+                ${amountUsd.toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between py-1.5">
@@ -204,7 +211,7 @@ export default async function ContributeSuccessPage({
               View campaign
             </Link>
             <Link
-              href="/dashboard/supporter/my-contributions"
+              href="/dashboard/supporter/contributions"
               className="flex-1 rounded-xl bg-(--accent) py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               My contributions
