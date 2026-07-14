@@ -9,6 +9,7 @@ import { useState } from "react";
 import ContributionDetailsModal from "@/components/ui/ContributionDetailsModal";
 import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
 import { ApproveContribution } from "@/lib/actions/contribution";
+import RejectContributionModal from "./RejectContributionModal";
 
 interface Pagination {
   page: number;
@@ -31,6 +32,7 @@ export default function PendingContributionsTable({
 
   const [openModal, setOpenModal] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
   console.log(contributions);
   if (!contributions?.length) {
     return (
@@ -175,7 +177,13 @@ export default function PendingContributionsTable({
                   Approve
                 </button>
 
-                <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500 px-3 py-2 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white">
+                <button
+                  onClick={() => {
+                    setSelectedContribution(contribution);
+                    setRejectOpen(true);
+                  }}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500 px-3 py-2 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
+                >
                   <XCircle size={16} />
                   Reject
                 </button>
@@ -306,6 +314,10 @@ export default function PendingContributionsTable({
 
                       {/* Reject */}
                       <button
+                        onClick={() => {
+                          setSelectedContribution(contribution);
+                          setRejectOpen(true);
+                        }}
                         className="
       flex h-10 w-10 items-center justify-center
       rounded-xl
@@ -381,6 +393,11 @@ export default function PendingContributionsTable({
         description={`Are you sure you want to approve the contribution from ${selectedContribution?.Supporter_name}? This amount will be added to the campaign raised total.`}
         confirmText="Approve"
         variant="success"
+      />
+      <RejectContributionModal
+        contribution={selectedContribution}
+        open={rejectOpen}
+        onClose={() => setRejectOpen(false)}
       />
     </div>
   );

@@ -90,9 +90,16 @@ export const ApproveContribution = async (contributionId: string) => {
   }
 };
 
-export const RejectContribution = async (id: string) => {
+export const RejectContribution = async (
+  id: string,
+  rejectionMessage: string,
+) => {
   try {
-    return await ServerMutation(`contributions/${id}/reject`, {}, "PATCH");
+    return await ServerMutation(
+      `creator/contributions/${id}/reject`,
+      { rejectionMessage },
+      "PATCH",
+    );
   } catch (error) {
     console.error("Failed to reject contribution", error);
     return { status: 500, message: "Failed to reject" };
