@@ -152,4 +152,5 @@ export interface SupporterStats {
   totalContributions: number;
   pendingContributions: number;
   totalAmountContributed: number;
+  availableCredits: number;
 }
