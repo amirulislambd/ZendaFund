@@ -51,7 +51,6 @@ export interface RegisterFormInputs {
   avatar?: FileList;
 }
 
-// --- Campaign Types ---
 
 export const CAMPAIGN_CATEGORIES = [
   "Technology",
@@ -85,20 +84,21 @@ export type CampaignQuery = {
   sort?: string;
   topFunded?: boolean;
   activeOnly?: boolean;
+  status?: string;
 };
 
 export type GetCampaignsResponse = {
-  campaigns: Array<{
-    id: string;
-    title: string;
-    coverImage: string;
-    totalAmountRaised: number;
-  }>;
-  maxRaisedAmount?: number;
-};
+  campaigns: Campaign[];
 
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+};
 export type GetCampaignResponse = {
-  campaign: Campaign;
+  campaign: Campaign[];
 };
 
 export interface PurchaseCreditProps {
@@ -184,4 +184,14 @@ export interface WithdrawalOverview {
   totalWithdrawnCredits: number;
   availableCredits: number;
   withdrawalAmount: number;
+}
+
+export interface CreatorDashboardStats {
+  totalCampaigns: number;
+  activeCampaigns: number;
+  totalRaisedCredits: number;
+}
+
+export interface CreatorDashboardResponse {
+  stats: CreatorDashboardStats;
 }

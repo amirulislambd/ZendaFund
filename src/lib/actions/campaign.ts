@@ -58,6 +58,9 @@ export const GetCampaigns = async (
     if (params.limit) query.set("limit", String(params.limit));
     if (params.sort) query.set("sort", params.sort);
     if (params.activeOnly) query.set("activeOnly", "true");
+    if (params.status) {
+      query.set("status", params.status);
+    }
 
     const url = params.topFunded
       ? "campaigns/top-funded"

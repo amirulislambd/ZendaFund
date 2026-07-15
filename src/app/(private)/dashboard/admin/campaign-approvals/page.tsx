@@ -1,11 +1,19 @@
-import React from 'react';
+import PendingCampaignTable from "@/components/dashboard/admin/PendingCampaignTable";
+import { GetCampaigns } from "@/lib/actions/campaign";
 
-const CampaignApprovalsPage = () => {
-    return (
-        <div>
-            <h1>Campaign Approvals</h1>
-        </div>
-    );
+const CampaignApprovalsPage = async () => {
+  const response = await GetCampaigns({
+    status: "pending",
+    page: 1,
+    limit: 10,
+  });
+
+  console.log(response);
+  return (
+    <div>
+      <PendingCampaignTable campaigns={response.campaigns} />
+    </div>
+  );
 };
 
 export default CampaignApprovalsPage;
