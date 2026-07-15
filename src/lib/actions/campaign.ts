@@ -82,7 +82,61 @@ export const GetCampaign = async (id: string): Promise<GetCampaignResponse> => {
     throw error;
   }
 };
+// update campaign by admin
 
+export const UpdateCampaignStatus = async (
+  campaignId: string,
+  status: "approved" | "rejected",
+  rejectionMessage?: string,
+) => {
+  try {
+    const response = await ServerMutation(
+      `admin/campaigns/${campaignId}/status`,
+      { status, rejectionMessage },
+      "PATCH",
+    );
+
+    if (response.status === 200) {
+      return {
+        status: 200,
+        message: "Status updated successfully",
+      };
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Failed to update campaign status", error);
+    throw error;
+  }
+};
+
+export const RejectContribution = async (
+  id: string,
+  rejectionMessage: string,
+) => {
+  try {
+    const response = await ServerMutation(
+      `contributions/${id}/reject`,
+      { rejectionMessage },
+      "PATCH",
+    );
+
+    if (response.status === 200) {
+      return {
+        status: 200,
+        message: "Contribution rejected successfully",
+      };
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Failed to reject contribution", error);
+    throw error;
+  }
+};
+
+
+// update campaign by creator
 export const UpdateCampaign = async (id: string, data: object) => {
   try {
     const res = await ServerMutation(`campaigns/${id}`, data, "PATCH");

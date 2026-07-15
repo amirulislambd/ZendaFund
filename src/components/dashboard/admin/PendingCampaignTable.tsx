@@ -4,6 +4,11 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle2, Clock3, ShieldCheck, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { UpdateCampaignStatus } from "@/lib/actions/campaign";
+import RejectCampaignModal from "./RejectCampaignModal";
 
 interface Campaign {
   _id: string;
@@ -19,23 +24,70 @@ interface Campaign {
 }
 
 interface Props {
-    campaigns: Campaign[];
-    currentPage: number;
-    totalPages: number;
-    totalCampaigns: number;
-  }
+  campaigns: Campaign[];
+  currentPage: number;
+  totalPages: number;
+  totalCampaigns: number;
+}
 
-export default function PendingCampaignTable({   campaigns,
-    currentPage,
-    totalPages,
-    totalCampaigns}: Props) {
+export default function PendingCampaignTable({
+  campaigns,
+  currentPage,
+  totalPages,
+  totalCampaigns,
+}: Props) {
+  const router = useRouter();
+  const handlePageChange = (page: number) => {
+    router.push(`/dashboard/admin/campaign-approvals?page=${page}`);
+  };
 
-        const router = useRouter();
-        const handlePageChange = (page: number) => {
-            router.push(
-              `/dashboard/admin/campaign-approvals?page=${page}`
-            );
-          };
+  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
+
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+
+  const handleApprove = async () => {
+    if (!selectedCampaign) return;
+
+    try {
+      setIsLoading(true);
+
+      const result = await UpdateCampaignStatus(selectedCampaign, "approved");
+
+      toast.success(result.message);
+
+      setApproveModalOpen(false);
+
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to approve campaign");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReject = async (reason: string) => {
+    if (!selectedCampaign) return;
+
+    try {
+      setIsLoading(true);
+      const result = await UpdateCampaignStatus(
+        selectedCampaign,
+        "rejected",
+        reason,
+      );
+      toast.success(result.message);
+      setRejectModalOpen(false);
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to reject campaign");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-3xl  bg-[#0f172a] shadow-xl">
@@ -272,6 +324,10 @@ export default function PendingCampaignTable({   campaigns,
                     </button>
 
                     <button
+                      onClick={() => {
+                        setSelectedCampaign(campaign._id);
+                        setRejectModalOpen(true);
+                      }}
                       className="
                         flex items-center gap-2
                         rounded-xl
@@ -295,57 +351,48 @@ export default function PendingCampaignTable({   campaigns,
         </table>
 
         <div className="border-t border-slate-700/50 p-6">
-  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-slate-400">
+              Showing page {currentPage} of {totalPages}
+              {" • "}
+              Total {totalCampaigns} campaigns
+            </p>
 
-    <p className="text-sm text-slate-400">
-      Showing page {currentPage} of {totalPages}
-      {" • "}
-      Total {totalCampaigns} campaigns
-    </p>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="rounded-xl border border-slate-700 px-4 py-2 disabled:opacity-50"
+              >
+                Previous
+              </button>
 
-    <div className="flex items-center gap-2">
-      <button
-        disabled={currentPage === 1}
-        onClick={() =>
-          handlePageChange(currentPage - 1)
-        }
-        className="rounded-xl border border-slate-700 px-4 py-2 disabled:opacity-50"
-      >
-        Previous
-      </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`h-10 w-10 rounded-xl ${
+                      currentPage === page
+                        ? "bg-cyan-500 text-white"
+                        : "border border-slate-700"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
 
-      {Array.from(
-        { length: totalPages },
-        (_, i) => i + 1
-      ).map((page) => (
-        <button
-          key={page}
-          onClick={() =>
-            handlePageChange(page)
-          }
-          className={`h-10 w-10 rounded-xl ${
-            currentPage === page
-              ? "bg-cyan-500 text-white"
-              : "border border-slate-700"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
-
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() =>
-          handlePageChange(currentPage + 1)
-        }
-        className="rounded-xl border border-slate-700 px-4 py-2 disabled:opacity-50"
-      >
-        Next
-      </button>
-    </div>
-  </div>
-</div>
-
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="rounded-xl border border-slate-700 px-4 py-2 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ========================= */}
@@ -445,6 +492,10 @@ export default function PendingCampaignTable({   campaigns,
 
               <div className="mt-6 flex gap-3">
                 <button
+                  onClick={() => {
+                    setSelectedCampaign(campaign._id);
+                    setApproveModalOpen(true);
+                  }}
                   className="
                     flex flex-1 items-center justify-center gap-2
                     rounded-xl
@@ -461,6 +512,10 @@ export default function PendingCampaignTable({   campaigns,
                 </button>
 
                 <button
+                  onClick={() => {
+                    setSelectedCampaign(campaign._id);
+                    setRejectModalOpen(true);
+                  }}
                   className="
                     flex flex-1 items-center justify-center gap-2
                     rounded-xl
@@ -481,6 +536,22 @@ export default function PendingCampaignTable({   campaigns,
           </motion.div>
         ))}
       </div>
+
+      <DynamicConfirmModal
+        isOpen={approveModalOpen}
+        onClose={() => setApproveModalOpen(false)}
+        onConfirm={handleApprove}
+        variant="success"
+        title="Approve Campaign"
+        description="Are you sure you want to approve this campaign? Once approved, supporters will be able to view and contribute to it."
+        confirmText="Approve Campaign"
+      />
+      <RejectCampaignModal
+        isOpen={rejectModalOpen}
+        onClose={() => setRejectModalOpen(false)}
+        onConfirm={handleReject}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
