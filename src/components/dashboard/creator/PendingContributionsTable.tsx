@@ -37,17 +37,27 @@ export default function PendingContributionsTable({
   if (!contributions?.length) {
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="rounded-3xl border border-dashed border-(--border) bg-(--surface) p-12 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl border border-dashed border-cyan-500/20 bg-gradient-to-br from-[#071331] to-[#0a1f3d] p-12 text-center"
       >
-        <h3 className="text-xl font-semibold text-(--foreground)">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-500/10 text-2xl">
+          📩
+        </div>
+
+        <h3 className="mt-5 text-2xl font-bold text-white">
           No Pending Contributions
         </h3>
 
-        <p className="mt-2 text-sm text-(--muted)">
-          All contributions have already been reviewed.
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400">
+          Great job! All contribution requests for your campaigns have already
+          been reviewed. New pending contributions will appear here
+          automatically.
         </p>
+
+        <div className="mt-6 inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-xs font-medium text-cyan-400">
+          Everything is up to date
+        </div>
       </motion.div>
     );
   }
