@@ -39,7 +39,7 @@ export default function AddCampaignForm({
   const router = useRouter();
   const pathname = usePathname();
 
-  // path অনুযায়ী dynamic mode
+  // path  dynamic mode
   const isEditMode = !pathname.includes("/campaigns/new");
 
   const {

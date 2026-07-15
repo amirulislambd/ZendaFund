@@ -21,53 +21,85 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isRoleOpen, setIsRoleOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterFormInputs>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<RegisterFormInputs>({
     defaultValues: {
-      role: undefined
-    }
+      role: undefined,
+    },
   });
 
-  const selectedRole = watch('role');
+  const selectedRole = watch("role");
   const normalizedSelectedRole = normalizeStoredRole(selectedRole);
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Shows an instant local preview (base64, display-only — never sent to the
+  // server), then uploads the actual file to ImgBB and stores the returned
+  // URL. Only that URL is sent as profilePic on submit, which is what fixes
+  // the 413 Content Too Large error caused by sending raw base64 image data.
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatarPreview(reader.result as string);
+    reader.readAsDataURL(file);
+
+    setIsAvatarUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY as string;
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${API_KEY}`,
+        { method: "POST", body: formData },
+      );
+      const result = await response.json();
+
+      if (result.success) {
+        setAvatarUrl(result.data.url);
+      } else {
+        console.error("ImgBB upload failed:", result);
+      }
+    } catch (error) {
+      console.error("Avatar upload failed:", error);
+    } finally {
+      setIsAvatarUploading(false);
     }
   };
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     try {
-      const normalizedRole = normalizeStoredRole(data.role) ?? 'supporter';
+      const normalizedRole = normalizeStoredRole(data.role) ?? "supporter";
       const { error } = await signUp.email({
         email: data.email,
         password: data.password,
         name: data.fullName,
         role: normalizedRole,
-        credits: normalizedRole === 'supporter' ? 50 : 20,
-        profilePic: avatarPreview ?? '',
+        credits: normalizedRole === "supporter" ? 50 : 20,
+        profilePic: avatarUrl,
       });
 
       if (error) {
-        console.error('Registration failed:', error);
-        alert(error.message || 'Registration failed');
+        console.error("Registration failed:", error);
+        alert(error.message || "Registration failed");
         return;
       }
 
       // On success, redirect to dashboard
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error("Registration error:", err);
     }
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {/* 1. Stylish Avatar Upload slot */}

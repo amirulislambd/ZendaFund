@@ -25,6 +25,7 @@ export default async function SupporterHomePage() {
       pagination: { page: 1, limit: 5, total: 0, pages: 1 },
     })),
   ]);
+  console.log("stats", stats);
   return (
     <div className="max-w-6xl mx-auto">
       <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#050d2a] via-[#071331] to-[#0a2a45]">
