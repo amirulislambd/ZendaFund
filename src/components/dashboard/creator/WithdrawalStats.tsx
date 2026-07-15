@@ -4,18 +4,16 @@ import { motion } from "framer-motion";
 
 interface WithdrawalOverview {
   totalRaisedCredits: number;
-  totalWithdrawnCredits: number;
+  withdrawnCredits: number;
   availableCredits: number;
-  withdrawalAmount: number;
+  availableEarnings: number;
 }
 
 interface Props {
   overview: WithdrawalOverview;
 }
 
-export default function WithdrawalStats({
-  overview,
-}: Props) {
+export default function WithdrawalStats({ overview }: Props) {
   const cards = [
     {
       title: "Total Raised Credits",
@@ -24,7 +22,7 @@ export default function WithdrawalStats({
     },
     {
       title: "Withdrawn Credits",
-      value: overview.totalWithdrawnCredits,
+      value: overview.withdrawnCredits,
       suffix: "Credits",
     },
     {
@@ -34,38 +32,61 @@ export default function WithdrawalStats({
     },
     {
       title: "Available Earnings",
-      value: overview.withdrawalAmount,
+      value: overview.availableEarnings,
       prefix: "$",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card, index) => (
-        <motion.div
-          key={card.title}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.3,
-            delay: index * 0.08,
-          }}
-          className="rounded-2xl border border-(--border) bg-(--surface) p-5 shadow-sm"
-        >
-          <p className="text-sm text-(--muted)">
-            {card.title}
-          </p>
+    <div className="relative overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-r from-[#050d2a] via-[#071331] to-[#0a2a45] p-8">
+      <div className="absolute right-0 top-0 h-full w-96 bg-cyan-500/5 blur-3xl" />
 
-          <h3 className="mt-3 text-3xl font-bold text-(--foreground)">
-            {card.prefix ?? ""}
-            {card?.value?.toLocaleString()}
-          </h3>
+      <div className="relative grid gap-6 lg:grid-cols-2">
+        {/* Left Content */}
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-medium text-cyan-400">
+            💳 Withdrawal Center
+          </div>
 
-          <p className="mt-1 text-xs text-(--muted)">
-            {card.suffix ?? ""}
+          <h1 className="mt-4 text-4xl font-bold text-white">Withdrawals</h1>
+
+          <p className="mt-3 max-w-xl text-slate-300">
+            Manage your earnings, track available credits, and submit secure
+            withdrawal requests to your preferred payment method.
           </p>
-        </motion.div>
-      ))}
+        </div>
+
+        {/* Right Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+            <p className="text-xs text-slate-400">Total Raised</p>
+            <h3 className="mt-2 text-2xl font-bold text-white">
+              {overview.totalRaisedCredits}
+            </h3>
+          </div>
+
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+            <p className="text-xs text-slate-400">Withdrawn</p>
+            <h3 className="mt-2 text-2xl font-bold text-white">
+              {overview.withdrawnCredits}
+            </h3>
+          </div>
+
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+            <p className="text-xs text-slate-400">Available Credits</p>
+            <h3 className="mt-2 text-2xl font-bold text-emerald-400">
+              {overview.availableCredits}
+            </h3>
+          </div>
+
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+            <p className="text-xs text-slate-400">Earnings</p>
+            <h3 className="mt-2 text-2xl font-bold text-cyan-400">
+              ${overview.availableEarnings}
+            </h3>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

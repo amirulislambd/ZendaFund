@@ -1,23 +1,17 @@
+import WithdrawalForm from "@/components/dashboard/creator/WithdrawalForm";
 import WithdrawalStats from "@/components/dashboard/creator/WithdrawalStats";
 import { GetWithdrawalOverview } from "@/lib/api/withdraw";
 
 const WithdrawalsPage = async () => {
   const overview = await GetWithdrawalOverview();
 
+  console.log(overview);
+
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-(--foreground)">Withdrawals</h1>
+      <WithdrawalStats overview={overview.stats} />
 
-        <p className="mt-2 text-(--muted)">
-          Manage your earnings and submit withdrawal requests.
-        </p>
-      </div>
-
-      <WithdrawalStats overview={overview} />
-
-      {/* Next Step */}
-      {/* Withdrawal Form */}
+      <WithdrawalForm availableCredits={overview.availableCredits} />
     </section>
   );
 };
