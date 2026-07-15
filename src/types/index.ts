@@ -178,3 +178,10 @@ export interface GetMyCampaignsResponse {
     hasPrevPage: boolean;
   };
 }
+
+export interface WithdrawalOverview {
+  totalRaisedCredits: number;
+  totalWithdrawnCredits: number;
+  availableCredits: number;
+  withdrawalAmount: number;
+}

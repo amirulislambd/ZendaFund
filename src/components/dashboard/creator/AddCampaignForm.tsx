@@ -132,7 +132,7 @@ export default function AddCampaignForm({
     toast.success(
       "Campaign submitted successfully! It will be visible after Admin approval.",
     );
-    router.push("/dashboard/creator/campaigns");
+    router.push("/dashboard/creator/campaigns/myCampaigns");
   };
 
   return (
