@@ -1,5 +1,9 @@
 import type { Campaign, CampaignQuery, GetCampaignResponse } from "@/types";
-import { ServerGet, ServerMutation } from "../core/serverMutation";
+import {
+  ServerDelete,
+  ServerGet,
+  ServerMutation,
+} from "../core/serverMutation";
 
 export type GetCampaignsResponse = {
   campaigns: Campaign[];
@@ -84,4 +88,14 @@ export const UpdateCampaign = async (id: string, data: object) => {
     console.error("Failed to update campaign", error);
     return { status: 500, message: "Failed to update campaign" };
   }
+};
+
+export const DeleteCampaign = async (id: string) => {
+  const res = await ServerDelete(`creator/campaigns/${id}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to delete campaign");
+  }
+
+  return await res.json();
 };

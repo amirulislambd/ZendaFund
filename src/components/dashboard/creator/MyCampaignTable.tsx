@@ -9,7 +9,11 @@ import {
   Coins,
   CalendarDays,
 } from "lucide-react";
-
+import { DeleteCampaign } from "@/lib/actions/campaign";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
 interface Campaign {
   _id: string;
   title: string;
@@ -34,10 +38,33 @@ interface Props {
   pagination: Pagination;
 }
 
-export default function MyCampaignTable({
-  campaigns,
-  pagination,
-}: Props) {
+export default function MyCampaignTable({ campaigns, pagination }: Props) {
+  const router = useRouter();
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
+    null,
+  );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!selectedCampaignId) return;
+
+    try {
+      setIsDeleting(true);
+
+      await DeleteCampaign(selectedCampaignId);
+
+      toast.success("Campaign deleted successfully.");
+
+      setIsDeleteModalOpen(false);
+      setSelectedCampaignId(null);
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to delete campaign.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   return (
     <>
       {/* Mobile Cards */}
@@ -76,8 +103,8 @@ export default function MyCampaignTable({
                     campaign.status === "approved"
                       ? "bg-emerald-500/10 text-emerald-400"
                       : campaign.status === "pending"
-                      ? "bg-amber-500/10 text-amber-400"
-                      : "bg-rose-500/10 text-rose-400"
+                        ? "bg-amber-500/10 text-amber-400"
+                        : "bg-rose-500/10 text-rose-400"
                   }`}
                 >
                   {campaign.status}
@@ -86,9 +113,7 @@ export default function MyCampaignTable({
 
               <div className="mt-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Category
-                  </span>
+                  <span className="text-sm text-slate-400">Category</span>
 
                   <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs text-cyan-400">
                     {campaign.category}
@@ -96,9 +121,7 @@ export default function MyCampaignTable({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Goal
-                  </span>
+                  <span className="text-sm text-slate-400">Goal</span>
 
                   <span className="font-medium text-white">
                     {campaign.goal.toLocaleString()}
@@ -106,9 +129,7 @@ export default function MyCampaignTable({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Raised
-                  </span>
+                  <span className="text-sm text-slate-400">Raised</span>
 
                   <span className="font-semibold text-emerald-400">
                     {campaign.raisedAmount.toLocaleString()}
@@ -116,14 +137,10 @@ export default function MyCampaignTable({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Deadline
-                  </span>
+                  <span className="text-sm text-slate-400">Deadline</span>
 
                   <span className="text-white">
-                    {new Date(
-                      campaign.deadline
-                    ).toLocaleDateString()}
+                    {new Date(campaign.deadline).toLocaleDateString()}
                   </span>
                 </div>
               </div>
@@ -145,6 +162,10 @@ export default function MyCampaignTable({
                 </Link>
 
                 <button
+                  onClick={() => {
+                    setSelectedCampaignId(campaign._id);
+                    setIsDeleteModalOpen(true);
+                  }}
                   className="
                     flex flex-1 items-center justify-center
                     rounded-xl
@@ -161,136 +182,135 @@ export default function MyCampaignTable({
             </motion.div>
           ))
         )}
-      </div><div className="hidden md:block">
-  <motion.div
-    initial={{ opacity: 0, y: 25 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4 }}
-    className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-[#071425] shadow-[0_20px_60px_rgba(0,0,0,.25)]"
-  >
-    <div className="overflow-x-auto">
-      <table className="min-w-full">
-        <thead>
-          <tr className="border-b border-white/10 bg-white/5 text-left">
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Campaign
-            </th>
+      </div>
+      <div className="hidden md:block">
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-[#071425] shadow-[0_20px_60px_rgba(0,0,0,.25)]"
+        >
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-white/10 bg-white/5 text-left">
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Campaign
+                  </th>
 
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Category
-            </th>
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Category
+                  </th>
 
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Goal
-            </th>
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Goal
+                  </th>
 
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Raised
-            </th>
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Raised
+                  </th>
 
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Deadline
-            </th>
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Deadline
+                  </th>
 
-            <th className="px-6 py-5 text-sm font-semibold text-slate-300">
-              Status
-            </th>
+                  <th className="px-6 py-5 text-sm font-semibold text-slate-300">
+                    Status
+                  </th>
 
-            <th className="px-6 py-5 text-center text-sm font-semibold text-slate-300">
-              Actions
-            </th>
-          </tr>
-        </thead>
+                  <th className="px-6 py-5 text-center text-sm font-semibold text-slate-300">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
 
-        <tbody>
-          {campaigns.length === 0 ? (
-            <tr>
-              <td colSpan={7}>
-                <div className="flex flex-col items-center justify-center py-16">
-                  <FolderKanban className="h-12 w-12 text-cyan-400/50" />
+              <tbody>
+                {campaigns.length === 0 ? (
+                  <tr>
+                    <td colSpan={7}>
+                      <div className="flex flex-col items-center justify-center py-16">
+                        <FolderKanban className="h-12 w-12 text-cyan-400/50" />
 
-                  <h3 className="mt-4 text-lg font-semibold text-white">
-                    No Campaigns Found
-                  </h3>
+                        <h3 className="mt-4 text-lg font-semibold text-white">
+                          No Campaigns Found
+                        </h3>
 
-                  <p className="mt-2 text-sm text-slate-400">
-                    You haven't created any campaigns yet.
-                  </p>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            campaigns.map((campaign, index) => (
-              <motion.tr
-                key={campaign._id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.25,
-                  delay: index * 0.05,
-                }}
-                className="border-b border-white/5 transition-all hover:bg-white/[0.03]"
-              >
-                <td className="px-6 py-5">
-                  <div>
-                    <h3 className="font-semibold text-white">
-                      {campaign.title}
-                    </h3>
+                        <p className="mt-2 text-sm text-slate-400">
+                          You haven't created any campaigns yet.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  campaigns.map((campaign, index) => (
+                    <motion.tr
+                      key={campaign._id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.25,
+                        delay: index * 0.05,
+                      }}
+                      className="border-b border-white/5 transition-all hover:bg-white/[0.03]"
+                    >
+                      <td className="px-6 py-5">
+                        <div>
+                          <h3 className="font-semibold text-white">
+                            {campaign.title}
+                          </h3>
 
-                    <p className="mt-1 text-xs text-slate-400">
-                      Campaign Project
-                    </p>
-                  </div>
-                </td>
+                          <p className="mt-1 text-xs text-slate-400">
+                            Campaign Project
+                          </p>
+                        </div>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400">
-                    {campaign.category}
-                  </span>
-                </td>
+                      <td className="px-6 py-5">
+                        <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400">
+                          {campaign.category}
+                        </span>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <Coins className="h-4 w-4 text-cyan-400" />
-                    {campaign.goal.toLocaleString()}
-                  </div>
-                </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <Coins className="h-4 w-4 text-cyan-400" />
+                          {campaign.goal.toLocaleString()}
+                        </div>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <span className="font-semibold text-emerald-400">
-                    {campaign.raisedAmount.toLocaleString()}
-                  </span>
-                </td>
+                      <td className="px-6 py-5">
+                        <span className="font-semibold text-emerald-400">
+                          {campaign.raisedAmount.toLocaleString()}
+                        </span>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <CalendarDays className="h-4 w-4" />
-                    {new Date(
-                      campaign.deadline
-                    ).toLocaleDateString()}
-                  </div>
-                </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-2 text-slate-400">
+                          <CalendarDays className="h-4 w-4" />
+                          {new Date(campaign.deadline).toLocaleDateString()}
+                        </div>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                      campaign.status === "approved"
-                        ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                        : campaign.status === "pending"
-                        ? "border border-amber-500/20 bg-amber-500/10 text-amber-400"
-                        : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
-                    }`}
-                  >
-                    {campaign.status}
-                  </span>
-                </td>
+                      <td className="px-6 py-5">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                            campaign.status === "approved"
+                              ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                              : campaign.status === "pending"
+                                ? "border border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                : "border border-rose-500/20 bg-rose-500/10 text-rose-400"
+                          }`}
+                        >
+                          {campaign.status}
+                        </span>
+                      </td>
 
-                <td className="px-6 py-5">
-                  <div className="flex justify-center gap-3">
-                    {/* Edit */}
-                    <Link
-                       href={`/dashboard/creator/campaigns/myCampaigns/${campaign._id}`}
-                      className="
+                      <td className="px-6 py-5">
+                        <div className="flex justify-center gap-3">
+                          {/* Edit */}
+                          <Link
+                            href={`/dashboard/creator/campaigns/myCampaigns/${campaign._id}`}
+                            className="
                         flex h-10 w-10 items-center justify-center
                         rounded-xl
                         border border-white/10
@@ -302,13 +322,17 @@ export default function MyCampaignTable({
                         hover:bg-sky-500/10
                         hover:shadow-[0_0_20px_rgba(56,189,248,.25)]
                       "
-                    >
-                      <Pencil size={16} />
-                    </Link>
+                          >
+                            <Pencil size={16} />
+                          </Link>
 
-                    {/* Delete */}
-                    <button
-                      className="
+                          {/* Delete */}
+                          <button
+                            onClick={() => {
+                              setSelectedCampaignId(campaign._id);
+                              setIsDeleteModalOpen(true);
+                            }}
+                            className="
                         flex h-10 w-10 items-center justify-center
                         rounded-xl
                         border border-white/10
@@ -320,19 +344,20 @@ export default function MyCampaignTable({
                         hover:bg-rose-500/10
                         hover:shadow-[0_0_20px_rgba(244,63,94,.25)]
                       "
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
-              </motion.tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  </motion.div>
-</div>      {/* Pagination */}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      </div>{" "}
+      {/* Pagination */}
       <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-3xl border border-cyan-500/10 bg-[#071425] px-6 py-5 sm:flex-row">
         <p className="text-sm text-slate-400">
           Total Campaigns:
@@ -385,6 +410,17 @@ export default function MyCampaignTable({
           </button>
         </div>
       </div>
+      <DynamicConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        variant="danger"
+        title="Delete Campaign?"
+        description="This action cannot be undone. The campaign will be permanently deleted and all approved supporters will automatically receive their contributed credits back."
+        confirmText="Delete Campaign"
+        cancelText="Cancel"
+      />
     </>
   );
 }

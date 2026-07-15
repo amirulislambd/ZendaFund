@@ -34,6 +34,18 @@ export const ServerMutation = async (
   return handleStatusCode(response);
 };
 
+export const ServerDelete = async (url: string) => {
+  const response = await fetch(`${baseUrl}/api/${url}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(await authHeader()),
+    },
+  });
+  return handleStatusCode(response);
+};
+
+
 const handleStatusCode = (res: Response) => {
   if (res.status === 401) {
     redirect("/unauthorized");
