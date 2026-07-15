@@ -1,8 +1,13 @@
 import CreatorOverviewStats from "@/components/dashboard/creator/CreatorOverviewStats";
-import { GetCreatorDashboardOverview } from "@/lib/api/stuts";
+import CreatorPerformanceChart from "@/components/dashboard/creator/CreatorPerformanceChart";
+import {
+  GetCreatorDashboardOverview,
+  GetCreatorPerformanceChart,
+} from "@/lib/api/stuts";
 
 export default async function CreatorDashboardPage() {
   const response = await GetCreatorDashboardOverview();
+  const performance = await GetCreatorPerformanceChart();
 
   return (
     <section className="space-y-6">
@@ -21,6 +26,9 @@ export default async function CreatorDashboardPage() {
         </p>
       </div>
       <CreatorOverviewStats stats={response.stats} />
+      <div>
+        <CreatorPerformanceChart data={performance.chartData} />
+      </div>
     </section>
   );
 }

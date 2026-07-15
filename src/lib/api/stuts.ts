@@ -36,3 +36,23 @@ export const GetCreatorDashboardOverview =
       };
     }
   };
+
+  // get creator dashboard performance chart
+
+  export const GetCreatorPerformanceChart = async () => {
+    try {
+      return await ServerGet(
+        "creator/performance-chart"
+      );
+    } catch (error) {
+      console.error(
+        "Failed to fetch creator performance chart",
+        error,
+      );
+  
+      return {
+        success: false,
+        chartData: [],
+      };
+    }
+  };
