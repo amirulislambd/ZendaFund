@@ -56,3 +56,27 @@ export const GetCreatorDashboardOverview =
       };
     }
   };
+
+  // get admin dashboard overview
+
+  export const GetAdminDashboardOverview = async () => {
+    try {
+      return await ServerGet(
+        "admin/dashboard-overview"
+      );
+    } catch (error) {
+      console.error(
+        "Failed to fetch admin dashboard overview",
+        error,
+      );
+  
+      return {
+        stats: {
+          totalSupporters: 0,
+          totalCreators: 0,
+          totalAvailableCredits: 0,
+          totalPaymentsProcessed: 0,
+        },
+      };
+    }
+  };

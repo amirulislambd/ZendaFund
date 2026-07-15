@@ -15,6 +15,7 @@ import {
   type LucideIcon,
   CheckCircle2,
   ClipboardCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 export type DashboardRole = "Supporter" | "Creator" | "Admin";
@@ -106,11 +107,20 @@ export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
 
   Admin: [
     { label: "Home", href: "/dashboard/admin", icon: LayoutDashboard },
-    { label: "Manage Users", href: "/dashboard/admin/users", icon: Users },
+    {
+      label: "Manage Users",
+      href: "/dashboard/admin/manage-users",
+      icon: Users,
+    },
     {
       label: "Manage Campaigns",
-      href: "/dashboard/admin/campaigns",
+      href: "/dashboard/admin/manage-campaigns",
       icon: FolderKanban,
+    },
+    {
+      label: "Campaign Approvals",
+      href: "/dashboard/admin/campaign-approvals",
+      icon: ShieldCheck,
     },
     {
       label: "Withdrawal Requests",
