@@ -1,11 +1,18 @@
-import React from 'react';
+import WithdrawalRequestsTable from "@/components/dashboard/admin/WithdrawalRequestsTable";
+import { GetAdminWithdrawals } from "@/lib/api/withdraw";
 
-const WithdrawalsRequestsPage = () => {
-    return (
-        <div>
-            <h1>Withdrawals Requests</h1>
-        </div>
-    );
+const WithdrawalRequestsPage = async () => {
+  const response = await GetAdminWithdrawals();
+
+  console.log(response);
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold">Withdrawal Requests</h1>
+
+      <WithdrawalRequestsTable withdrawals={response.withdrawals} />
+    </div>
+  );
 };
 
-export default WithdrawalsRequestsPage;
+export default WithdrawalRequestsPage;

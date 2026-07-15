@@ -1,3 +1,4 @@
+import { GetAdminWithdrawalsResponse } from "@/types";
 import { ServerGet } from "../core/serverMutation";
 
 export const GetWithdrawalOverview = async () => {
@@ -26,4 +27,19 @@ export const GetCreatorWithdrawals = async (
   query.append("limit", String(limit));
 
   return await ServerGet(`creator/withdrawals?${query.toString()}`);
+};
+
+export const GetAdminWithdrawals = async () => {
+  try {
+    const res = await ServerGet("admin/withdrawals");
+
+    return res as GetAdminWithdrawalsResponse;
+  } catch (error) {
+    console.error("Failed to fetch withdrawals", error);
+
+    return {
+      success: false,
+      withdrawals: [],
+    };
+  }
 };

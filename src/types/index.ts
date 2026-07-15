@@ -195,3 +195,24 @@ export interface CreatorDashboardStats {
 export interface CreatorDashboardResponse {
   stats: CreatorDashboardStats;
 }
+
+export interface Withdrawal {
+  _id: string;
+  creator_email: string;
+  creator_name: string;
+
+  withdrawal_credit: number;
+  withdrawal_amount: number;
+
+  payment_system: string;
+  account_number: string;
+
+  withdraw_date: string;
+
+  status: "pending" | "approved";
+}
+
+export interface GetAdminWithdrawalsResponse {
+  success: boolean;
+  withdrawals: Withdrawal[];
+}
