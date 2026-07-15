@@ -165,3 +165,16 @@ export interface SupporterStats {
   totalAmountContributed: number;
   availableCredits: number;
 }
+
+export interface GetMyCampaignsResponse {
+  success: boolean;
+  data: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}

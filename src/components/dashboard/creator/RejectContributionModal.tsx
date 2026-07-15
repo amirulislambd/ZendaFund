@@ -7,7 +7,6 @@ import { Contribution } from "@/types";
 import { RejectContribution } from "@/lib/actions/contribution";
 import { useRouter } from "next/navigation";
 
-
 type Props = {
   contribution: Contribution | null;
   open: boolean;
@@ -23,14 +22,14 @@ export default function RejectContributionModal({
 }: Props) {
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
-const router = useRouter();
+  const router = useRouter();
   if (!contribution) return null;
 
   const handleReject = async () => {
     if (!reason.trim()) return;
     setSubmitting(true);
     const res = await RejectContribution(contribution.id, reason.trim());
-router.refresh();
+    router.refresh();
     setSubmitting(false);
     if (res?.status !== 500) {
       setReason("");
@@ -52,10 +51,10 @@ router.refresh();
           />
 
           <motion.div
-            initial={{ opacity: 0, scale: .95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: .95 }}
-            transition={{ duration: .25 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
             className="
               fixed left-1/2 top-1/2 z-50
               w-[95%] max-w-md

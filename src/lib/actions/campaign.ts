@@ -76,3 +76,12 @@ export const GetCampaign = async (id: string): Promise<GetCampaignResponse> => {
   }
 };
 
+export const UpdateCampaign = async (id: string, data: object) => {
+  try {
+    const res = await ServerMutation(`campaigns/${id}`, data, "PATCH");
+    return res;
+  } catch (error) {
+    console.error("Failed to update campaign", error);
+    return { status: 500, message: "Failed to update campaign" };
+  }
+};
