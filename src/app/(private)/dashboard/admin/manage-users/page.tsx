@@ -14,14 +14,29 @@ export default async function ManageUsersPge({ searchParams }: Props) {
   const page = Number(params.page) || 1;
   const search = params.search || "";
 
-  const response = await GetUsers(page, 10, search);
-  console.log(response);
+  let users = [];
+  let currentPage = 1;
+  let totalPages = 1;
+  let totalUsers = 0;
+
+  try {
+    const response = await GetUsers(page, 10, search);
+    if (response?.data) {
+      users = response.data;
+      currentPage = response.pagination?.page ?? 1;
+      totalPages = response.pagination?.totalPages ?? 1;
+      totalUsers = response.pagination?.total ?? 0;
+    }
+  } catch (err) {
+    console.error("ManageUsersPge:", err);
+  }
+
   return (
     <ManageUsersTable
-      users={response.data}
-      currentPage={response.pagination.page}
-      totalPages={response.pagination.totalPages}
-      totalUsers={response.pagination.total}
+      users={users}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalUsers={totalUsers}
     />
   );
 }
