@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Search, Users, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 import { User } from "@/types";
@@ -199,9 +200,12 @@ export default function ManageUsersTable({
                     </td>
                   </tr>
                 )}
-                {users.map((user) => (
-                  <tr
+                {users.map((user, index) => (
+                  <motion.tr
                     key={user.id || (user as any)._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
                     className="border-b border-white/5 transition hover:bg-white/[0.03]"
                   >
                     {/* User */}
@@ -291,7 +295,7 @@ export default function ManageUsersTable({
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
@@ -303,9 +307,13 @@ export default function ManageUsersTable({
           {users.length === 0 && (
             <p className="py-10 text-center text-slate-500">No users found.</p>
           )}
-          {users.map((user) => (
-            <div
+          {users.map((user, index) => (
+            <motion.div
               key={user.id || (user as any)._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ y: -2 }}
               className="overflow-hidden rounded-3xl border border-white/10 bg-[#071425] p-5"
             >
               {/* Top */}
@@ -390,7 +398,7 @@ export default function ManageUsersTable({
                   Remove User
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

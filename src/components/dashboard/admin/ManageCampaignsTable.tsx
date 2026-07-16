@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Search, LayoutList, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 import { AdminCampaign } from "@/types";
@@ -164,9 +165,12 @@ export default function ManageCampaignsTable({
                     </td>
                   </tr>
                 )}
-                {campaigns.map((campaign) => (
-                  <tr
+                {campaigns.map((campaign, index) => (
+                  <motion.tr
                     key={campaign._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
                     className="border-b border-white/5 transition hover:bg-white/[0.03]"
                   >
                     {/* Campaign */}
@@ -231,7 +235,7 @@ export default function ManageCampaignsTable({
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
@@ -245,9 +249,13 @@ export default function ManageCampaignsTable({
               No campaigns found.
             </p>
           )}
-          {campaigns.map((campaign) => (
-            <div
+          {campaigns.map((campaign, index) => (
+            <motion.div
               key={campaign._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ y: -2 }}
               className="overflow-hidden rounded-3xl border border-white/10 bg-[#071425]"
             >
               <Image
@@ -295,7 +303,7 @@ export default function ManageCampaignsTable({
                   Delete Campaign
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

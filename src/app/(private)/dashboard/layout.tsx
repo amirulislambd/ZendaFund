@@ -3,6 +3,8 @@ import { UserSessionToSSR } from "@/lib/core/session";
 import DashboardSidebar from "@/components/dashboard/Dashboardsidebar";
 import { normalizeDashboardRole } from "@/lib/Dashboardnav";
 
+export const dynamic = "force-dynamic";
+
 
 
 const DashboardLayout = async ({

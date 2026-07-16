@@ -1,6 +1,8 @@
 import React from 'react';
 import RegisterForm from '@/components/auth/RegisterForm';
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'Register - ZendaFund',
   description: 'Create an account to join ZendaFund.',

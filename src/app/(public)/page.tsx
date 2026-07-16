@@ -10,6 +10,8 @@ import { GetCampaigns } from "@/lib/actions/campaign";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { campaigns: featuredCampaigns } = await GetCampaigns({
     limit: 6,

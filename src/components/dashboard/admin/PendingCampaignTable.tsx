@@ -308,6 +308,10 @@ export default function PendingCampaignTable({
                 <td className="px-6 py-5">
                   <div className="flex justify-end gap-3">
                     <button
+                      onClick={() => {
+                        setSelectedCampaign(campaign._id);
+                        setApproveModalOpen(true);
+                      }}
                       className="
                         flex items-center gap-2
                         rounded-xl

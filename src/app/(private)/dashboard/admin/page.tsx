@@ -1,13 +1,15 @@
 import AdminDashboardStats from '@/components/dashboard/admin/AdminDashboardStats';
+import AdminIncomeChart from '@/components/dashboard/admin/AdminIncomeChart';
+import AdminActivityFeed from '@/components/dashboard/admin/AdminActivityFeed';
 import { GetAdminDashboardOverview } from '@/lib/api/stuts';
 import { ShieldCheck } from 'lucide-react';
 
-
-
 const AdminDashboardPage = async() => {
-
-    const response =
-    await GetAdminDashboardOverview();
+    const response = await GetAdminDashboardOverview();
+    
+    // Add default empty arrays if API doesn't return them yet
+    const monthlyIncome = response.monthlyIncome || [];
+    const activities = response.activities || [];
 
     return (
         <div>
@@ -48,6 +50,15 @@ const AdminDashboardPage = async() => {
       <AdminDashboardStats
         stats={response.stats}
       />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <AdminIncomeChart data={monthlyIncome} />
+        </div>
+        <div>
+          <AdminActivityFeed activities={activities} />
+        </div>
+      </div>
     </section>
         </div>
     );

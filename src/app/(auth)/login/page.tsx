@@ -1,6 +1,8 @@
 import React from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'Sign In - ZendaFund',
   description: 'Sign in to your ZendaFund account.',

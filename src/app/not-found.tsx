@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { SearchX, Home, ArrowLeft } from "lucide-react";
+import { SearchX, Home } from "lucide-react";
+import GoBackButton from "@/components/ui/GoBackButton";
 
 export default function NotFound() {
   return (
@@ -31,13 +32,7 @@ export default function NotFound() {
             <Home className="h-4 w-4 transition-transform group-hover:scale-110" />
             Back to Home
           </Link>
-          <button
-            onClick={() => window.history.back()}
-            className="group flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-muted)]/50 px-6 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)]/50 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] sm:w-auto"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Go Back
-          </button>
+          <GoBackButton />
         </div>
       </div>
     </div>

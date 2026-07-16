@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Logo from "../ui/Logo";
 import ThemeToggle from "../ui/ThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 const publicNavLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -226,6 +227,8 @@ export default function Navbar() {
                   {user.credits ?? 0} credits
                 </span>
               </div>
+
+              <NotificationBell />
 
               <Link
                 href={dashboardPath}
