@@ -47,7 +47,10 @@ export default function HeroSection() {
                 className="kb-img object-cover"
               />
 
-              {/* Overlays removed as requested */}
+              {/* Gentle overlays to blend the image beautifully with the website's theme */}
+              <div className="absolute inset-0 bg-[var(--surface)]/20" />
+              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--surface)] to-transparent opacity-80" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--surface)] to-transparent opacity-90" />
 
               {/* Overlaid copy */}
               <div className="relative z-10 flex h-full items-center justify-center px-6 sm:px-10 lg:px-16">

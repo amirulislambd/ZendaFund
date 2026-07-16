@@ -51,7 +51,6 @@ export interface RegisterFormInputs {
   avatar?: FileList;
 }
 
-
 export const CAMPAIGN_CATEGORIES = [
   "Technology",
   "Art",
@@ -220,3 +219,13 @@ export interface GetAdminWithdrawalsResponse {
 interface Props {
   withdrawals: Withdrawal[];
 }
+
+export type GetUsersResponse = {
+  success: boolean;
+  users: User[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalUsers: number;
+  };
+};

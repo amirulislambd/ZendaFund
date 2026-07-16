@@ -2,13 +2,24 @@ import type { HeroSlide } from '@/types/hero';
 
 export const heroSlides: HeroSlide[] = [
   {
-    eyebrow: 'Crowdfunding, reimagined',
-    headingLine1: 'Empower Ideas,',
-    headingLine2: 'Ignite Change',
+    eyebrow: 'Fund the Future',
+    headingLine1: 'Invest in Ideas',
+    headingLine2: 'That Matter',
     description:
-      'The next generation of secure, transparent crowdfunding. Invest in social and creative impact with institutional-grade security and community-led transparency.',
+      'Join thousands of backers turning visionary concepts into reality. ZendaFund provides a seamless, secure platform to support world-changing innovations.',
     image:
-      'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?fm=jpg&q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?fm=jpg&q=80&w=1600&auto=format&fit=crop',
+    primaryCta: { label: 'Explore Campaigns', href: '/explore' },
+    secondaryCta: { label: 'Launch a Fund', href: '/dashboard' },
+  },
+  {
+    eyebrow: 'Global Community',
+    headingLine1: 'Together We',
+    headingLine2: 'Build Dreams',
+    description:
+      'Connect with a global network of creators, innovators, and supporters. Experience transparent crowdfunding where every contribution drives tangible progress.',
+    image:
+      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?fm=jpg&q=80&w=1600&auto=format&fit=crop',
     primaryCta: { label: 'Explore Campaigns', href: '/explore' },
     secondaryCta: { label: 'Launch a Fund', href: '/dashboard' },
   },
