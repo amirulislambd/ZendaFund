@@ -83,14 +83,14 @@ export default function ManageUsersTable({
 
   /* ─── open modals ──────────────────────────────────────────────────────── */
   const openDeleteModal = (user: User) => {
-    setModal({ open: true, type: "delete", userId: user.id, userName: user.name });
+    setModal({ open: true, type: "delete", userId: user.id || (user as any)._id, userName: user.name });
   };
 
   const openRoleModal = (user: User, newRole: Role) => {
     setModal({
       open: true,
       type: "role",
-      userId: user.id,
+      userId: user.id || (user as any)._id,
       userName: user.name,
       pendingRole: newRole,
     });
@@ -201,7 +201,7 @@ export default function ManageUsersTable({
                 )}
                 {users.map((user) => (
                   <tr
-                    key={user.id}
+                    key={user.id || (user as any)._id}
                     className="border-b border-white/5 transition hover:bg-white/[0.03]"
                   >
                     {/* User */}
@@ -305,7 +305,7 @@ export default function ManageUsersTable({
           )}
           {users.map((user) => (
             <div
-              key={user.id}
+              key={user.id || (user as any)._id}
               className="overflow-hidden rounded-3xl border border-white/10 bg-[#071425] p-5"
             >
               {/* Top */}
