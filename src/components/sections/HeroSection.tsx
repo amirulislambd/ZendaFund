@@ -47,10 +47,7 @@ export default function HeroSection() {
                 className="kb-img object-cover"
               />
 
-              {/* Scrim: dark from the left so overlaid text stays legible, plus a base tint */}
-              <div className="absolute inset-0 bg-[rgba(0,0,0,0.35)]" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[rgba(13,18,16,1)] via-[rgba(13,18,16,0.7)] to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[rgba(13,18,16,0.8)] to-transparent" />
+              {/* Overlays removed as requested */}
 
               {/* Overlaid copy */}
               <div className="relative z-10 flex h-full items-center justify-center px-6 sm:px-10 lg:px-16">

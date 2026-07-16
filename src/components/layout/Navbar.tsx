@@ -44,9 +44,7 @@ export default function Navbar() {
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as Node;
-      const insideTrigger = profileRef.current?.contains(target);
-      const insideDrawer = profileDrawerRef.current?.contains(target);
-      if (!insideTrigger && !insideDrawer) {
+      if (profileRef.current && !profileRef.current.contains(target)) {
         setIsProfileOpen(false);
       }
     }
@@ -69,7 +67,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    if (isProfileOpen && isMobile) {
+    if ((isProfileOpen || isMobileOpen) && isMobile) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -77,11 +75,12 @@ export default function Navbar() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isProfileOpen]);
+  }, [isProfileOpen, isMobileOpen]);
 
   const handleSignOut = async () => {
     await signOut();
     setIsProfileOpen(false);
+    setIsMobileOpen(false);
     router.push("/");
     router.refresh();
   };
@@ -136,7 +135,10 @@ export default function Navbar() {
 
       <Link
         href={dashboardPath}
-        onClick={() => setIsProfileOpen(false)}
+        onClick={() => {
+          setIsProfileOpen(false);
+          setIsMobileOpen(false);
+        }}
         className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)]"
       >
         <LayoutDashboard className="h-4 w-4" />
@@ -237,7 +239,7 @@ export default function Navbar() {
                 Dashboard
               </Link>
 
-              <div className="relative" ref={profileRef}>
+              <div className="relative hidden md:block" ref={profileRef}>
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen((prev) => !prev)}
@@ -283,6 +285,22 @@ export default function Navbar() {
             </div>
           )}
 
+          {!isPending && user && (
+            <div className="md:hidden flex items-center">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={user.name}
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-[var(--accent)]/20"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-(--accent) to-teal-500 text-xs font-bold text-(--foreground)">
+                  {initials}
+                </div>
+              )}
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => setIsMobileOpen((prev) => !prev)}
@@ -294,13 +312,71 @@ export default function Navbar() {
         </div>
       </div>
 
-      {isMobileOpen && (
-        <div className="border-t border-[var(--border)] bg-[var(--surface)]/95 px-4 py-4 text-[var(--foreground)] backdrop-blur-md md:hidden">
-          <nav className="flex flex-col gap-1">
+    </header>
+
+    {isMobileOpen && (
+      <div className="fixed inset-0 z-[60] md:hidden">
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsMobileOpen(false)}
+          aria-label="Close menu"
+        />
+        <div
+          className="absolute inset-y-0 right-0 flex w-[min(18rem,85vw)] flex-col border-l border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-2xl shadow-black/50 overflow-y-auto"
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm font-semibold text-(--foreground)">Menu</p>
+            <button
+              type="button"
+              onClick={() => setIsMobileOpen(false)}
+              className="rounded-lg p-1.5 text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5 text-(--foreground)" />
+            </button>
+          </div>
+          
+          {!isPending && user && (
+            <div className="mb-4 flex flex-col gap-2 border-b border-[var(--border)] pb-4">
+              <div className="rounded-xl border border-(--border) bg-(--surface-muted)/80 px-3 py-3">
+                <div className="flex items-center gap-3">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={user.name} className="h-12 w-12 rounded-full object-cover ring-2 ring-[var(--accent)]/30" />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-(--accent) to-teal-500 text-sm font-bold text-(--foreground)">
+                      {initials}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-(--foreground)">{user.name}</p>
+                    <p className="truncate text-xs text-(--muted)">{user.email}</p>
+                  </div>
+                </div>
+                <span className="mt-2 inline-block rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  {displayRole}
+                </span>
+              </div>
+
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)]/90 px-2 py-1">
+                <ThemeToggle variant="menu" />
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5">
+                <Coins className="h-4 w-4 text-emerald-400" />
+                <span className="text-sm font-semibold text-emerald-300">
+                  {user.credits ?? 0} credits
+                </span>
+              </div>
+            </div>
+          )}
+
+          <nav className="flex flex-col gap-1 mb-4 border-b border-[var(--border)] pb-4">
             {publicNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => setIsMobileOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   isActive(link.href)
                     ? "bg-emerald-500/10 text-emerald-400"
@@ -312,101 +388,60 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {isPending && (
-              <div className="mt-2 h-10 animate-pulse rounded-xl bg-(--surface-muted)" />
-            )}
-
-            {!isPending && !user && (
-              <>
-                <Link
-                  href="/login"
-                  className="mt-2 rounded-xl border border-(--border) px-4 py-3 text-center text-sm font-semibold text-(--muted) transition hover:border-emerald-400/40 hover:text-(--foreground)"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="rounded-xl bg-emerald-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
-                >
-                  Register
-                </Link>
-              </>
-            )}
-
             {!isPending && user && (
-              <>
-                <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)]/80 px-4 py-3 text-[var(--foreground)]">
-                  <p className="text-sm font-semibold">{user.name}</p>
-                  <p className="text-xs text-[var(--muted)]">{user.email}</p>
-                  <span className="mt-1 inline-block rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
-                    {displayRole}
-                  </span>
-                </div>
-
-                <Link
-                  href={dashboardPath}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
-
-                <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-4 py-3">
-                  <Coins className="h-4 w-4 text-emerald-400" />
-                  <span className="text-sm font-semibold text-emerald-300">
-                    {user.credits ?? 0} credits
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="flex items-center gap-3 rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/20"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
-                </button>
-              </>
+              <Link
+                href={dashboardPath}
+                onClick={() => setIsMobileOpen(false)}
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
             )}
 
             <a
               href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => setIsMobileOpen(false)}
               className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
             >
               <GitBranchPlus className="h-4 w-4" />
               Join as Developer
             </a>
           </nav>
-        </div>
-      )}
-    </header>
 
-    {isProfileOpen && user && (
-      <div className="fixed inset-0 z-[60] md:hidden">
-        <button
-          type="button"
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={() => setIsProfileOpen(false)}
-          aria-label="Close profile menu"
-        />
-        <div
-          ref={profileDrawerRef}
-          className="absolute inset-y-0 right-0 flex w-[min(18rem,85vw)] flex-col border-l border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-2xl shadow-black/50"
-        >
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-(--foreground)">My Account</p>
-            <button
-              type="button"
-              onClick={() => setIsProfileOpen(false)}
-              className="rounded-lg p-1.5 text-(--muted) transition hover:bg-(--surface-muted) hover:text-(--foreground)"
-              aria-label="Close profile menu"
-            >
-              <X className="h-5 w-5 text-(--foreground)" />
-            </button>
-          </div>
-          {profileMenuContent}
+          {!isPending && !user && (
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/login"
+                onClick={() => setIsMobileOpen(false)}
+                className="rounded-xl border border-[var(--border)] px-4 py-3 text-center text-sm font-semibold text-[var(--muted)] transition hover:border-emerald-400/40 hover:text-[var(--foreground)]"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsMobileOpen(false)}
+                className="rounded-xl bg-emerald-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+
+          {!isPending && user && (
+            <div className="mt-auto pt-4">
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="flex w-full items-center gap-2 rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/20"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )}

@@ -98,7 +98,7 @@ export type GetCampaignsResponse = {
   };
 };
 export type GetCampaignResponse = {
-  campaign: Campaign[];
+  campaign: Campaign;
 };
 
 export interface PurchaseCreditProps {
@@ -214,5 +214,9 @@ export interface Withdrawal {
 
 export interface GetAdminWithdrawalsResponse {
   success: boolean;
+  withdrawals: Withdrawal[];
+}
+
+interface Props {
   withdrawals: Withdrawal[];
 }
