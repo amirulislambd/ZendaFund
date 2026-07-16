@@ -1,4 +1,6 @@
-import { GetUsers } from "@/lib/api/usres";
+import ManageCampaignsTable from "@/components/dashboard/admin/ManageCampaignsTable";
+import { GetAllAdminCampaigns } from "@/lib/api/usres";
+import { AdminCampaign } from "@/types";
 
 interface Props {
   searchParams: Promise<{
@@ -7,20 +9,34 @@ interface Props {
   }>;
 }
 
-const ManageCampaignPage = async ({ searchParams }: Props) => {
+export default async function ManageCampaignPage({ searchParams }: Props) {
   const params = await searchParams;
-
   const page = Number(params.page) || 1;
   const search = params.search || "";
 
-  const response = await GetUsers(page, 10, search);
-  console.log(response);
+  let campaigns: AdminCampaign[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+  let totalCampaigns = 0;
+
+  try {
+    const response = await GetAllAdminCampaigns(page, 10, search);
+    if (response?.data) {
+      campaigns = response.data;
+      currentPage = response.pagination?.page ?? 1;
+      totalPages = response.pagination?.totalPages ?? 1;
+      totalCampaigns = response.pagination?.total ?? 0;
+    }
+  } catch (err) {
+    console.error("ManageCampaignPage:", err);
+  }
 
   return (
-    <div>
-      <h1>Manage Campaign</h1>
-    </div>
+    <ManageCampaignsTable
+      campaigns={campaigns}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalCampaigns={totalCampaigns}
+    />
   );
-};
-
-export default ManageCampaignPage;
+}

@@ -1,4 +1,4 @@
-// import ManageUsersTable from "@/components/dashboard/admin/ManageUsersTable";
+import ManageUsersTable from "@/components/dashboard/admin/ManageUsersTable";
 import { GetUsers } from "@/lib/api/usres";
 
 interface Props {
@@ -16,14 +16,12 @@ export default async function ManageUsersPge({ searchParams }: Props) {
 
   const response = await GetUsers(page, 10, search);
   console.log(response);
-
   return (
-    // <ManageUsersTable
-    //   users={response.users}
-    //   currentPage={response.pagination.currentPage}
-    //   totalPages={response.pagination.totalPages}
-    //   totalUsers={response.pagination.totalUsers}
-    // />
-    <div>ManageUsersPge</div>
+    <ManageUsersTable
+      users={response.data}
+      currentPage={response.pagination.page}
+      totalPages={response.pagination.totalPages}
+      totalUsers={response.pagination.total}
+    />
   );
 }

@@ -222,10 +222,53 @@ interface Props {
 
 export type GetUsersResponse = {
   success: boolean;
-  users: User[];
+  data: User[];
   pagination: {
-    currentPage: number;
+    page: number;
+    limit: number;
+    total: number;
     totalPages: number;
-    totalUsers: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+};
+
+export interface Report {
+  _id: string;
+  campaign_id: string;
+  campaign_title: string;
+  reporter_name: string;
+  reporter_email: string;
+  reason: string;
+  createdAt: string;
+  campaign_status?: "active" | "suspended" | "deleted";
+}
+
+export type GetAdminReportsResponse = {
+  success: boolean;
+  data: Report[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export interface AdminCampaign extends Campaign {
+  contributionsCount?: number;
+  supportersCount?: number;
+}
+
+export type GetAdminCampaignsResponse = {
+  success: boolean;
+  data: AdminCampaign[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
   };
 };
