@@ -8,11 +8,9 @@ import { Quote } from "lucide-react";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import { GetTestimonials, Testimonial } from "@/lib/api/lendingData";
 
-import {
-  GetTestimonials,
-  Testimonial,
-} from "@/lib/api/testimonials";
+
 
 export default function TestimonialsSection() {
   const sectionRef =

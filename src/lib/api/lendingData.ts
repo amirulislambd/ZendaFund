@@ -22,3 +22,25 @@ export type Testimonial = {
       return { testimonials: [] };
     }
   };
+
+  export type PlatformStats = {
+    totalRaised: number;
+    totalCampaignsFunded: number;
+    totalSupporters: number;
+    totalContributions: number;
+  };
+  
+  export const GetPlatformStats = async (): Promise<PlatformStats> => {
+    try {
+      const res = await ServerGet("platform/stats");
+      return res as PlatformStats;
+    } catch (error) {
+      console.error("Failed to get platform stats", error);
+      return {
+        totalRaised: 0,
+        totalCampaignsFunded: 0,
+        totalSupporters: 0,
+        totalContributions: 0,
+      };
+    }
+  };

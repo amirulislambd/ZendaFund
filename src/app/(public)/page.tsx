@@ -1,3 +1,4 @@
+import PlatformImpactSection from "@/components/dashboard/supporter/PlatformImpactSection";
 import HeroSection from "@/components/sections/HeroSection";
 import TestimonialsSection from "@/components/sections/Testimonialssection";
 import CampaignCard from "@/components/shared/Campaigncard";
@@ -8,7 +9,6 @@ import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 
 export default async function Home() {
-
   const { campaigns: featuredCampaigns } = await GetCampaigns({
     limit: 6,
     sort: "raised",
@@ -56,6 +56,9 @@ export default async function Home() {
 
         <section>
           <TestimonialsSection />
+        </section>
+        <section>
+          <PlatformImpactSection />
         </section>
         <Toaster />
       </main>
