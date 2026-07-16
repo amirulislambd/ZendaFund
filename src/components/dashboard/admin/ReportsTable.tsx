@@ -17,7 +17,7 @@ import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
 import {
   SuspendReportedCampaign,
   DeleteReportedCampaign,
-} from "@/lib/actions/admin";
+} from "@/lib/api/admin";
 
 interface Props {
   reports: Report[];

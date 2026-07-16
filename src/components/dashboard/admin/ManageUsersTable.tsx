@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 import { User } from "@/types";
 import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
-import { DeleteUser, UpdateUserRole } from "@/lib/actions/admin";
+import { DeleteUser, UpdateUserRole } from "@/lib/api/admin";
 
 interface Props {
   users: User[];

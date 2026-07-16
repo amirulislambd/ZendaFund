@@ -14,7 +14,7 @@ export default async function ManageUsersPge({ searchParams }: Props) {
   const page = Number(params.page) || 1;
   const search = params.search || "";
 
-  let users = [];
+  let users: any[] = [];
   let currentPage = 1;
   let totalPages = 1;
   let totalUsers = 0;

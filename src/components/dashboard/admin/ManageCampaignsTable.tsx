@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 import { AdminCampaign } from "@/types";
 import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
-import { AdminDeleteCampaign } from "@/lib/actions/admin";
+import { AdminDeleteCampaign } from "@/lib/api/admin";
 
 interface Props {
   campaigns: AdminCampaign[];
