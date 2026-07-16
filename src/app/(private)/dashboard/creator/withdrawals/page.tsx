@@ -5,7 +5,7 @@ import { GetWithdrawalOverview } from "@/lib/api/withdraw";
 const WithdrawalsPage = async () => {
   const overview = await GetWithdrawalOverview();
 
-  //   console.log(overview);
+    console.log(overview);
 
   return (
     <section className="space-y-6">

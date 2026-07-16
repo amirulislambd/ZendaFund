@@ -39,6 +39,7 @@ export default function WithdrawalForm({ availableCredits }: Props) {
   const withdrawalAmount = Number((credits / 20).toFixed(2));
 
   const onSubmit = async (data: FormValues) => {
+    console.log(data);
     const response = await CreateWithdrawal({
       withdrawal_credit: data.withdrawal_credit,
       withdrawal_amount: withdrawalAmount,

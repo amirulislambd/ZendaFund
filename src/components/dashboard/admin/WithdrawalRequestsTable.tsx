@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  CheckCircle2,
-  CreditCard,
-  Calendar,
-  User,
-} from "lucide-react";
+import { CheckCircle2, CreditCard, Calendar, User } from "lucide-react";
 
 import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { ApproveWithdrawal } from "@/lib/actions/withdraw";
 
 interface Withdrawal {
   _id: string;
@@ -31,17 +29,16 @@ interface Props {
   withdrawals: Withdrawal[];
 }
 
-export default function WithdrawalRequestsTable({
-  withdrawals,
-}: Props) {
-  const [selectedWithdrawal, setSelectedWithdrawal] =
-    useState<string | null>(null);
+export default function WithdrawalRequestsTable({ withdrawals }: Props) {
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState<string | null>(
+    null,
+  );
 
-  const [approveModalOpen, setApproveModalOpen] =
-    useState(false);
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
 
-  const [isLoading, setIsLoading] =
-    useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleApprove = async () => {
     if (!selectedWithdrawal) return;
@@ -49,11 +46,20 @@ export default function WithdrawalRequestsTable({
     try {
       setIsLoading(true);
 
-      // await ApproveWithdrawal(selectedWithdrawal);
+      const result = await ApproveWithdrawal(selectedWithdrawal);
+
+      if (!result.success) {
+        toast.error(result.message || "Failed to approve withdrawal");
+        return;
+      }
+
+      toast.success(result.message || "Withdrawal approved successfully");
 
       setApproveModalOpen(false);
+
+      router.refresh();
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to approve withdrawal");
     } finally {
       setIsLoading(false);
     }
@@ -84,50 +90,50 @@ export default function WithdrawalRequestsTable({
   }
 
   return (
-    <>      {/* Desktop Table */}
+    <>
+      {" "}
+      {/* Desktop Table */}
+      <div className="hidden overflow-hidden rounded-3xl border border-cyan-500/10 bg-[#081122] md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/5 bg-white/[0.02]">
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Creator
+                </th>
 
-    <div className="hidden overflow-hidden rounded-3xl border border-cyan-500/10 bg-[#081122] md:block">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02]">
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Creator
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Credits
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Credits
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Amount
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Amount
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Method
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Method
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Account
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Account
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Date
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Date
-              </th>
+                <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
+                  Status
+                </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-slate-300">
-                Status
-              </th>
+                <th className="px-6 py-5 text-center text-sm font-semibold text-slate-300">
+                  Action
+                </th>
+              </tr>
+            </thead>
 
-              <th className="px-6 py-5 text-center text-sm font-semibold text-slate-300">
-                Action
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {withdrawals.map(
-              (withdrawal, index) => (
+            <tbody>
+              {withdrawals.map((withdrawal, index) => (
                 <motion.tr
                   key={withdrawal._id}
                   initial={{
@@ -164,22 +170,15 @@ export default function WithdrawalRequestsTable({
                   </td>
 
                   <td className="px-6 py-5 font-semibold text-emerald-400">
-                    $
-                    {withdrawal.withdrawal_amount.toLocaleString()}
+                    ${withdrawal.withdrawal_amount.toLocaleString()}
                   </td>
 
-                  <td className="px-6 py-5">
-                    {withdrawal.payment_system}
-                  </td>
+                  <td className="px-6 py-5">{withdrawal.payment_system}</td>
 
-                  <td className="px-6 py-5">
-                    {withdrawal.account_number}
-                  </td>
+                  <td className="px-6 py-5">{withdrawal.account_number}</td>
 
                   <td className="px-6 py-5 text-sm text-slate-400">
-                    {new Date(
-                      withdrawal.withdraw_date,
-                    ).toLocaleDateString()}
+                    {new Date(withdrawal.withdraw_date).toLocaleDateString()}
                   </td>
 
                   <td className="px-6 py-5">
@@ -192,13 +191,9 @@ export default function WithdrawalRequestsTable({
                     <div className="flex justify-center">
                       <button
                         onClick={() => {
-                          setSelectedWithdrawal(
-                            withdrawal._id,
-                          );
+                          setSelectedWithdrawal(withdrawal._id);
 
-                          setApproveModalOpen(
-                            true,
-                          );
+                          setApproveModalOpen(true);
                         }}
                         className="
                           rounded-xl
@@ -217,22 +212,22 @@ export default function WithdrawalRequestsTable({
                     </div>
                   </td>
                 </motion.tr>
-              ),
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>     {/* Mobile Cards */}
-<div className="space-y-4 lg:hidden">
-  {withdrawals.map((withdrawal, index) => (
-    <motion.div
-      key={withdrawal._id}
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: index * 0.05,
-      }}
-      className="
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>{" "}
+      {/* Mobile Cards */}
+      <div className="space-y-4 lg:hidden">
+        {withdrawals.map((withdrawal, index) => (
+          <motion.div
+            key={withdrawal._id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: index * 0.05,
+            }}
+            className="
         overflow-hidden
         rounded-3xl
         border
@@ -241,88 +236,76 @@ export default function WithdrawalRequestsTable({
         p-5
         shadow-lg
       "
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-(--foreground)">
-            {withdrawal.creator_name}
-          </h3>
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-(--foreground)">
+                  {withdrawal.creator_name}
+                </h3>
 
-          <p className="text-sm text-(--muted)">
-            {withdrawal.creator_email}
-          </p>
-        </div>
+                <p className="text-sm text-(--muted)">
+                  {withdrawal.creator_email}
+                </p>
+              </div>
 
-        <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
-          Pending
-        </span>
-      </div>
+              <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
+                Pending
+              </span>
+            </div>
 
-      {/* Stats Grid */}
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-(--surface-muted) p-3">
-          <p className="text-xs text-(--muted)">
-            Credits
-          </p>
+            {/* Stats Grid */}
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-(--surface-muted) p-3">
+                <p className="text-xs text-(--muted)">Credits</p>
 
-          <p className="mt-1 font-semibold text-(--foreground)">
-            {withdrawal.withdrawal_credit} Credits
-          </p>
-        </div>
+                <p className="mt-1 font-semibold text-(--foreground)">
+                  {withdrawal.withdrawal_credit} Credits
+                </p>
+              </div>
 
-        <div className="rounded-xl bg-(--surface-muted) p-3">
-          <p className="text-xs text-(--muted)">
-            Amount
-          </p>
+              <div className="rounded-xl bg-(--surface-muted) p-3">
+                <p className="text-xs text-(--muted)">Amount</p>
 
-          <p className="mt-1 font-semibold text-emerald-400">
-            ${withdrawal.withdrawal_amount}
-          </p>
-        </div>
+                <p className="mt-1 font-semibold text-emerald-400">
+                  ${withdrawal.withdrawal_amount}
+                </p>
+              </div>
 
-        <div className="rounded-xl bg-(--surface-muted) p-3">
-          <p className="text-xs text-(--muted)">
-            Method
-          </p>
+              <div className="rounded-xl bg-(--surface-muted) p-3">
+                <p className="text-xs text-(--muted)">Method</p>
 
-          <p className="mt-1 font-semibold text-(--foreground)">
-            {withdrawal.payment_system}
-          </p>
-        </div>
+                <p className="mt-1 font-semibold text-(--foreground)">
+                  {withdrawal.payment_system}
+                </p>
+              </div>
 
-        <div className="rounded-xl bg-(--surface-muted) p-3">
-          <p className="text-xs text-(--muted)">
-            Account
-          </p>
+              <div className="rounded-xl bg-(--surface-muted) p-3">
+                <p className="text-xs text-(--muted)">Account</p>
 
-          <p className="mt-1 truncate font-semibold text-(--foreground)">
-            {withdrawal.account_number}
-          </p>
-        </div>
-      </div>
+                <p className="mt-1 truncate font-semibold text-(--foreground)">
+                  {withdrawal.account_number}
+                </p>
+              </div>
+            </div>
 
-      {/* Date */}
-      <div className="mt-4 flex items-center gap-2 text-sm text-(--muted)">
-        <span>📅</span>
+            {/* Date */}
+            <div className="mt-4 flex items-center gap-2 text-sm text-(--muted)">
+              <span>📅</span>
 
-        <span>
-          {new Date(
-            withdrawal.withdraw_date,
-          ).toLocaleDateString()}
-        </span>
-      </div>
+              <span>
+                {new Date(withdrawal.withdraw_date).toLocaleDateString()}
+              </span>
+            </div>
 
-      {/* Action */}
-      <button
-        onClick={() => {
-          setSelectedWithdrawal(
-            withdrawal._id,
-          );
+            {/* Action */}
+            <button
+              onClick={() => {
+                setSelectedWithdrawal(withdrawal._id);
 
-          setApproveModalOpen(true);
-        }}
-        className="
+                setApproveModalOpen(true);
+              }}
+              className="
           mt-5
           w-full
           rounded-2xl
@@ -334,25 +317,22 @@ export default function WithdrawalRequestsTable({
           duration-200
           hover:bg-emerald-500
         "
-      >
-        Payment Success
-      </button>
-    </motion.div>
-  ))}
-</div>
-
-<DynamicConfirmModal
-  isOpen={approveModalOpen}
-  onClose={() =>
-    setApproveModalOpen(false)
-  }
-  onConfirm={handleApprove}
-  isLoading={isLoading}
-  variant="success"
-  title="Confirm Payment"
-  description="Are you sure the payment has been successfully sent to the creator? This action cannot be undone."
-  confirmText="Mark as Paid"
-/>
-</>
-);
+            >
+              Payment Success
+            </button>
+          </motion.div>
+        ))}
+      </div>
+      <DynamicConfirmModal
+        isOpen={approveModalOpen}
+        onClose={() => setApproveModalOpen(false)}
+        onConfirm={handleApprove}
+        isLoading={isLoading}
+        variant="success"
+        title="Confirm Payment"
+        description="Are you sure the payment has been successfully sent to the creator? This action cannot be undone."
+        confirmText="Mark as Paid"
+      />
+    </>
+  );
 }
