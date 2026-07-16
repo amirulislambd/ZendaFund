@@ -1,5 +1,7 @@
 import PlatformImpactSection from "@/components/dashboard/supporter/PlatformImpactSection";
+import ExploreByCategorySection from "@/components/sections/Explorebycategorysection";
 import HeroSection from "@/components/sections/HeroSection";
+import HowItWorksSection from "@/components/sections/HowItWorksSection";
 import TestimonialsSection from "@/components/sections/Testimonialssection";
 import CampaignCard from "@/components/shared/Campaigncard";
 
@@ -56,10 +58,11 @@ export default async function Home() {
 
         <section>
           <TestimonialsSection />
-        </section>
-        <section>
           <PlatformImpactSection />
+          <HowItWorksSection />
+          <ExploreByCategorySection />
         </section>
+
         <Toaster />
       </main>
     </div>
