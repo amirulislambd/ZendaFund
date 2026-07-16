@@ -1,4 +1,5 @@
 import HeroSection from "@/components/sections/HeroSection";
+import TestimonialsSection from "@/components/sections/Testimonialssection";
 import CampaignCard from "@/components/shared/Campaigncard";
 
 import { GetCampaigns } from "@/lib/actions/campaign";
@@ -7,10 +8,7 @@ import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 
 export default async function Home() {
-  // Use the regular listing endpoint (already proven to work on /explore)
-  // instead of the separate top-funded endpoint — it returns the full
-  // Campaign shape CampaignCard needs, and sorting by "raised" gives us
-  // the same "most funded first" effect for the featured section.
+
   const { campaigns: featuredCampaigns } = await GetCampaigns({
     limit: 6,
     sort: "raised",
@@ -54,6 +52,10 @@ export default async function Home() {
               />
             ))}
           </div>
+        </section>
+
+        <section>
+          <TestimonialsSection />
         </section>
         <Toaster />
       </main>
