@@ -45,7 +45,9 @@ export default function ContributionsTable({
                 <th className="px-6 py-4 font-semibold">Campaign</th>
                 <th className="px-6 py-4 font-semibold">Creator</th>
                 <th className="px-6 py-4 font-semibold">Amount</th>
-                {showPaymentMethod && <th className="px-6 py-4 font-semibold">Payment</th>}
+                {showPaymentMethod && (
+                  <th className="px-6 py-4 font-semibold">Payment</th>
+                )}
                 {showDate && <th className="px-6 py-4 font-semibold">Date</th>}
                 <th className="px-6 py-4 font-semibold">Status</th>
               </tr>
@@ -66,7 +68,9 @@ export default function ContributionsTable({
                   <td className="px-6 py-4 font-medium text-(--foreground)">
                     {contribution.campaign_title}
                   </td>
-                  <td className="px-6 py-4 text-(--muted)">{contribution.creator_name ?? "—"}</td>
+                  <td className="px-6 py-4 text-(--muted)">
+                    {contribution.creator_name ?? "—"}
+                  </td>
                   <td className="px-6 py-4 font-semibold text-(--foreground)">
                     {contribution.Contribution_amount.toLocaleString()} credits
                   </td>
@@ -76,10 +80,23 @@ export default function ContributionsTable({
                     </td>
                   )}
                   {showDate && (
-                    <td className="px-6 py-4 text-(--muted)">{formatDate(contribution.current_date)}</td>
+                    <td className="px-6 py-4 text-(--muted)">
+                      {formatDate(contribution.current_date)}
+                    </td>
                   )}
                   <td className="px-6 py-4">
-                    <ContributionStatusBadge status={contribution.status} />
+                    <div className="space-y-2">
+                      <ContributionStatusBadge status={contribution.status} />
+                      {contribution.status === "rejected" &&
+                        (contribution.rejectionReason ||
+                          contribution.message) && (
+                          <p className="max-w-[18rem] text-xs text-red-300 wrap-break-word">
+                            <span className="font-semibold">Reason:</span>{" "}
+                            {contribution.rejectionReason ||
+                              contribution.message}
+                          </p>
+                        )}
+                    </div>
                   </td>
                 </motion.tr>
               ))}
@@ -118,7 +135,9 @@ export default function ContributionsTable({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-(--muted)">Creator</span>
-                <span className="text-(--foreground)">{contribution.creator_name ?? "—"}</span>
+                <span className="text-(--foreground)">
+                  {contribution.creator_name ?? "—"}
+                </span>
               </div>
               {showPaymentMethod && (
                 <div className="flex items-center justify-between">
@@ -131,9 +150,20 @@ export default function ContributionsTable({
               {showDate && (
                 <div className="flex items-center justify-between">
                   <span className="text-(--muted)">Date</span>
-                  <span className="text-(--foreground)">{formatDate(contribution.current_date)}</span>
+                  <span className="text-(--foreground)">
+                    {formatDate(contribution.current_date)}
+                  </span>
                 </div>
               )}
+              {contribution.status === "rejected" &&
+                (contribution.rejectionReason || contribution.message) && (
+                  <div className="rounded-2xl border border-red-500/10 bg-red-500/5 p-4 text-sm text-red-200">
+                    <p className="font-semibold">Rejection Reason</p>
+                    <p className="mt-2 whitespace-pre-wrap wrap-break-word">
+                      {contribution.rejectionReason || contribution.message}
+                    </p>
+                  </div>
+                )}
             </div>
           </motion.div>
         ))}

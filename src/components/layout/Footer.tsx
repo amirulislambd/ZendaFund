@@ -7,7 +7,7 @@ import { LiaLinkedin } from "react-icons/lia";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#020817]">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-[#020817] mt-5 md:mt-10 lg:mt-16">
       {" "}
       {/* Glow Effects */}
       <div

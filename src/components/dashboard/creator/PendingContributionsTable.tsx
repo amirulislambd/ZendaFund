@@ -5,11 +5,13 @@ import { motion } from "framer-motion";
 import { Eye, CheckCircle2, XCircle, CreditCard } from "lucide-react";
 
 import { Contribution } from "@/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContributionDetailsModal from "@/components/ui/ContributionDetailsModal";
 import DynamicConfirmModal from "@/components/shared/DynamicConfirmModal";
 import { ApproveContribution } from "@/lib/actions/contribution";
 import RejectContributionModal from "./RejectContributionModal";
+import { toast } from "react-hot-toast";
+import { AnimatePresence } from "framer-motion";
 
 interface Pagination {
   page: number;
@@ -33,6 +35,12 @@ export default function PendingContributionsTable({
   const [openModal, setOpenModal] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [items, setItems] = useState<Contribution[]>(contributions || []);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    setItems(contributions || []);
+  }, [contributions]);
   console.log(contributions);
   if (!contributions?.length) {
     return (
@@ -96,7 +104,7 @@ export default function PendingContributionsTable({
                 <p className="text-sm text-slate-300">Pending Reviews</p>
 
                 <h2 className="text-4xl font-bold text-white">
-                  {contributions.length}
+                  {items.length}
                 </h2>
 
                 <p className="text-cyan-400">Awaiting Action</p>
@@ -109,98 +117,101 @@ export default function PendingContributionsTable({
       {/* ---------------- Mobile Cards ---------------- */}
 
       <div className="space-y-4 md:hidden">
-        {contributions.map((contribution, index) => (
-          <motion.div
-            key={contribution.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.3,
-              delay: index * 0.05,
-            }}
-            className="rounded-3xl border border-(--border) bg-(--surface) p-5 shadow-sm"
-          >
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs text-(--muted)">Supporter</p>
-
-                <p className="font-semibold text-(--foreground)">
-                  {contribution.Supporter_name}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs text-(--muted)">Campaign</p>
-
-                <p className="text-sm text-(--foreground)">
-                  {contribution.campaign_title}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+        <AnimatePresence>
+          {items.map((contribution, index) => (
+            <motion.div
+              key={contribution.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, height: 0, margin: 0, padding: 0 }}
+              transition={{
+                duration: 0.3,
+                delay: index * 0.05,
+              }}
+              className="rounded-3xl border border-(--border) bg-(--surface) p-5 shadow-sm"
+            >
+              <div className="space-y-4">
                 <div>
-                  <p className="text-xs text-(--muted)">Amount</p>
+                  <p className="text-xs text-(--muted)">Supporter</p>
 
-                  <p className="font-semibold text-(--accent)">
-                    {contribution.Contribution_amount} Credits
+                  <p className="font-semibold text-(--foreground)">
+                    {contribution.Supporter_name}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-(--muted)">Payment</p>
+                  <p className="text-xs text-(--muted)">Campaign</p>
 
-                  <span className="inline-flex items-center gap-1 rounded-full bg-(--surface-muted) px-3 py-1 text-xs">
-                    <CreditCard size={12} />
-                    {contribution.paymentMethod}
-                  </span>
+                  <p className="text-sm text-(--foreground)">
+                    {contribution.campaign_title}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-(--muted)">Amount</p>
+
+                    <p className="font-semibold text-(--accent)">
+                      {contribution.Contribution_amount} Credits
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-(--muted)">Payment</p>
+
+                    <span className="inline-flex items-center gap-1 rounded-full bg-(--surface-muted) px-3 py-1 text-xs">
+                      <CreditCard size={12} />
+                      {contribution.paymentMethod}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs text-(--muted)">Date</p>
+
+                  <p className="text-sm">
+                    {new Date(contribution.current_date).toLocaleDateString()}
+                  </p>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => {
+                      setSelectedContribution(contribution);
+                      setOpenModal(true);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-blue-500 px-3 py-2 text-sm font-medium text-blue-500 transition hover:bg-blue-500 hover:text-white"
+                  >
+                    <Eye size={16} />
+                    View
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedContribution(contribution);
+                      setApproveOpen(true);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500 px-3 py-2 text-sm font-medium text-green-500 transition hover:bg-green-500 hover:text-white"
+                  >
+                    <CheckCircle2 size={16} />
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedContribution(contribution);
+                      setRejectOpen(true);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500 px-3 py-2 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
+                  >
+                    <XCircle size={16} />
+                    Reject
+                  </button>
                 </div>
               </div>
-
-              <div>
-                <p className="text-xs text-(--muted)">Date</p>
-
-                <p className="text-sm">
-                  {new Date(contribution.current_date).toLocaleDateString()}
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => {
-                    setSelectedContribution(contribution);
-                    setOpenModal(true);
-                  }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-blue-500 px-3 py-2 text-sm font-medium text-blue-500 transition hover:bg-blue-500 hover:text-white"
-                >
-                  <Eye size={16} />
-                  View
-                </button>
-
-                <button
-                  onClick={() => {
-                    setSelectedContribution(contribution);
-                    setApproveOpen(true);
-                  }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-green-500 px-3 py-2 text-sm font-medium text-green-500 transition hover:bg-green-500 hover:text-white"
-                >
-                  <CheckCircle2 size={16} />
-                  Approve
-                </button>
-
-                <button
-                  onClick={() => {
-                    setSelectedContribution(contribution);
-                    setRejectOpen(true);
-                  }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500 px-3 py-2 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
-                >
-                  <XCircle size={16} />
-                  Reject
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* ---------------- Desktop Table ---------------- */}
@@ -237,54 +248,56 @@ export default function PendingContributionsTable({
             </thead>
 
             <tbody>
-              {contributions.map((contribution, index) => (
-                <motion.tr
-                  key={contribution.id}
-                  initial={{
-                    opacity: 0,
-                    y: 10,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    duration: 0.25,
-                    delay: index * 0.05,
-                  }}
-                  className="border-b border-(--border) last:border-none"
-                >
-                  <td className="px-6 py-4 font-medium">
-                    {contribution.Supporter_name}
-                  </td>
+              <AnimatePresence>
+                {items.map((contribution, index) => (
+                  <motion.tr
+                    key={contribution.id}
+                    initial={{
+                      opacity: 0,
+                      y: 10,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{
+                      duration: 0.25,
+                      delay: index * 0.05,
+                    }}
+                    className="border-b border-(--border) last:border-none"
+                  >
+                    <td className="px-6 py-4 font-medium">
+                      {contribution.Supporter_name}
+                    </td>
 
-                  <td className="max-w-[280px] px-6 py-4">
-                    <p className="truncate">{contribution.campaign_title}</p>
-                  </td>
+                    <td className="max-w-[280px] px-6 py-4">
+                      <p className="truncate">{contribution.campaign_title}</p>
+                    </td>
 
-                  <td className="px-6 py-4 font-semibold text-(--accent)">
-                    {contribution.Contribution_amount}
-                  </td>
+                    <td className="px-6 py-4 font-semibold text-(--accent)">
+                      {contribution.Contribution_amount}
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <span className="rounded-full bg-(--surface-muted) px-3 py-1 text-xs">
-                      {contribution.paymentMethod}
-                    </span>
-                  </td>
+                    <td className="px-6 py-4">
+                      <span className="rounded-full bg-(--surface-muted) px-3 py-1 text-xs">
+                        {contribution.paymentMethod}
+                      </span>
+                    </td>
 
-                  <td className="px-6 py-4 text-sm text-(--muted)">
-                    {new Date(contribution.current_date).toLocaleDateString()}
-                  </td>
+                    <td className="px-6 py-4 text-sm text-(--muted)">
+                      {new Date(contribution.current_date).toLocaleDateString()}
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center gap-2">
-                      {/* View */}
-                      <button
-                        onClick={() => {
-                          setSelectedContribution(contribution);
-                          setOpenModal(true);
-                        }}
-                        className="
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-2">
+                        {/* View */}
+                        <button
+                          onClick={() => {
+                            setSelectedContribution(contribution);
+                            setOpenModal(true);
+                          }}
+                          className="
       flex h-10 w-10 items-center justify-center
       rounded-xl
       border border-white/10
@@ -296,17 +309,17 @@ export default function PendingContributionsTable({
       hover:bg-sky-500/10
       hover:shadow-[0_0_20px_rgba(56,189,248,.25)]
     "
-                      >
-                        <Eye size={16} />
-                      </button>
+                        >
+                          <Eye size={16} />
+                        </button>
 
-                      {/* Approve */}
-                      <button
-                        onClick={() => {
-                          setSelectedContribution(contribution);
-                          setApproveOpen(true);
-                        }}
-                        className="
+                        {/* Approve */}
+                        <button
+                          onClick={() => {
+                            setSelectedContribution(contribution);
+                            setApproveOpen(true);
+                          }}
+                          className="
       flex h-10 w-10 items-center justify-center
       rounded-xl
       border border-white/10
@@ -318,17 +331,17 @@ export default function PendingContributionsTable({
       hover:bg-emerald-500/10
       hover:shadow-[0_0_20px_rgba(16,185,129,.25)]
     "
-                      >
-                        <CheckCircle2 size={16} />
-                      </button>
+                        >
+                          <CheckCircle2 size={16} />
+                        </button>
 
-                      {/* Reject */}
-                      <button
-                        onClick={() => {
-                          setSelectedContribution(contribution);
-                          setRejectOpen(true);
-                        }}
-                        className="
+                        {/* Reject */}
+                        <button
+                          onClick={() => {
+                            setSelectedContribution(contribution);
+                            setRejectOpen(true);
+                          }}
+                          className="
       flex h-10 w-10 items-center justify-center
       rounded-xl
       border border-white/10
@@ -340,13 +353,14 @@ export default function PendingContributionsTable({
       hover:bg-rose-500/10
       hover:shadow-[0_0_20px_rgba(244,63,94,.25)]
     "
-                      >
-                        <XCircle size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
+                        >
+                          <XCircle size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             </tbody>
           </table>
         </div>
@@ -392,12 +406,23 @@ export default function PendingContributionsTable({
       <DynamicConfirmModal
         isOpen={approveOpen}
         onClose={() => setApproveOpen(false)}
+        isLoading={isProcessing}
         onConfirm={async () => {
           if (!selectedContribution) return;
-
-          await ApproveContribution(selectedContribution.id);
-
-          setApproveOpen(false);
+          setIsProcessing(true);
+          try {
+            await ApproveContribution(selectedContribution.id);
+            setItems((prev) =>
+              prev.filter((c) => c.id !== selectedContribution.id),
+            );
+            toast.success("Contribution approved");
+          } catch (err) {
+            console.error(err);
+            toast.error("Failed to approve contribution");
+          } finally {
+            setIsProcessing(false);
+            setApproveOpen(false);
+          }
         }}
         title="Approve Contribution"
         description={`Are you sure you want to approve the contribution from ${selectedContribution?.Supporter_name}? This amount will be added to the campaign raised total.`}
