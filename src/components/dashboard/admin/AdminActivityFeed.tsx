@@ -6,10 +6,11 @@ import { formatDistanceToNow } from "date-fns";
 
 interface ActivityItem {
   _id: string;
-  action: string;
-  userName: string;
-  userRole: string;
-  createdAt: string;
+  type: string;
+  message: string;
+  status: string;
+  source?: string;
+  date: string;
 }
 
 interface Props {
@@ -25,7 +26,7 @@ export default function AdminActivityFeed({ activities }: Props) {
       className="rounded-3xl border border-slate-700/50 bg-[#0f172a] p-6 shadow-xl relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -z-10" />
-      
+
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-indigo-500/20 rounded-xl text-indigo-400">
           <Activity size={20} />
@@ -34,8 +35,10 @@ export default function AdminActivityFeed({ activities }: Props) {
       </div>
 
       <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
-        {(!activities || activities.length === 0) ? (
-          <p className="text-slate-400 text-center py-8">No recent activities found.</p>
+        {!activities || activities.length === 0 ? (
+          <p className="text-slate-400 text-center py-8">
+            No recent activities found.
+          </p>
         ) : (
           activities.map((activity, index) => (
             <motion.div
@@ -55,16 +58,23 @@ export default function AdminActivityFeed({ activities }: Props) {
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <span className="font-semibold text-white">
-                      {activity.userName}
+                      {activity.source ?? activity.type ?? "Activity"}
                     </span>{" "}
                     <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 ml-1">
-                      {activity.userRole}
+                      {activity.status}
                     </span>
-                    <p className="text-slate-300 mt-1 text-sm">{activity.action}</p>
+                    <p className="text-slate-300 mt-1 text-sm">
+                      {activity.message}
+                    </p>
                   </div>
                   <div className="flex items-center text-xs text-slate-500 whitespace-nowrap">
                     <Clock size={12} className="mr-1" />
-                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+                    {(() => {
+                      const date = new Date(activity.date);
+                      return Number.isNaN(date.getTime())
+                        ? "just now"
+                        : formatDistanceToNow(date, { addSuffix: true });
+                    })()}
                   </div>
                 </div>
               </div>

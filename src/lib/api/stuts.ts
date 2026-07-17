@@ -1,6 +1,27 @@
 import { CreatorDashboardResponse, SupporterStats } from "@/types";
 import { ServerGet } from "../core/serverMutation";
 
+export interface AdminDashboardOverviewResponse {
+  stats: {
+    totalSupporters: number;
+    totalCreators: number;
+    totalAvailableCredits: number;
+    totalPaymentsProcessed: number;
+  };
+  monthlyPerformance?: {
+    month: string;
+    credits: number;
+  }[];
+  recentActivity?: {
+    _id: string;
+    type: string;
+    message: string;
+    status: string;
+    date: string;
+    source?: string;
+  }[];
+}
+
 // get supporter stats
 export const GetSupporterStats = async (): Promise<SupporterStats> => {
   try {
@@ -37,39 +58,30 @@ export const GetCreatorDashboardOverview =
     }
   };
 
-  // get creator dashboard performance chart
+// get creator dashboard performance chart
 
-  export const GetCreatorPerformanceChart = async () => {
+export const GetCreatorPerformanceChart = async () => {
+  try {
+    return await ServerGet("creator/performance-chart");
+  } catch (error) {
+    console.error("Failed to fetch creator performance chart", error);
+
+    return {
+      success: false,
+      chartData: [],
+    };
+  }
+};
+
+// get admin dashboard overview
+
+export const GetAdminDashboardOverview =
+  async (): Promise<AdminDashboardOverviewResponse> => {
     try {
-      return await ServerGet(
-        "creator/performance-chart"
-      );
+      return await ServerGet("admin/dashboard-overview");
     } catch (error) {
-      console.error(
-        "Failed to fetch creator performance chart",
-        error,
-      );
-  
-      return {
-        success: false,
-        chartData: [],
-      };
-    }
-  };
+      console.error("Failed to fetch admin dashboard overview", error);
 
-  // get admin dashboard overview
-
-  export const GetAdminDashboardOverview = async () => {
-    try {
-      return await ServerGet(
-        "admin/dashboard-overview"
-      );
-    } catch (error) {
-      console.error(
-        "Failed to fetch admin dashboard overview",
-        error,
-      );
-  
       return {
         stats: {
           totalSupporters: 0,
@@ -77,6 +89,8 @@ export const GetCreatorDashboardOverview =
           totalAvailableCredits: 0,
           totalPaymentsProcessed: 0,
         },
+        monthlyPerformance: [],
+        recentActivity: [],
       };
     }
   };

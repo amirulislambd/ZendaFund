@@ -28,11 +28,48 @@ export default function NotificationBell() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const soundUnlockedRef = useRef(false);
+
   useEffect(() => {
     audioRef.current = new Audio(
       "https://actions.google.com/sounds/v1/alarms/beep_short.ogg",
     );
   }, []);
+
+  useEffect(() => {
+    const unlockSound = async () => {
+      if (!audioRef.current || soundUnlockedRef.current) return;
+      audioRef.current.muted = true;
+      try {
+        await audioRef.current.play();
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current.muted = false;
+        soundUnlockedRef.current = true;
+      } catch (error) {
+        console.warn("Audio unlock attempt failed:", error);
+      }
+    };
+
+    const handleFirstInteraction = () => {
+      unlockSound();
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("keydown", handleFirstInteraction);
+    };
+
+    document.addEventListener("click", handleFirstInteraction, {
+      once: true,
+    });
+    document.addEventListener("keydown", handleFirstInteraction, {
+      once: true,
+    });
+
+    return () => {
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("keydown", handleFirstInteraction);
+    };
+  }, []);
+
   const fetchNotifications = async () => {
     if (!session?.user) return;
 
@@ -47,7 +84,13 @@ export default function NotificationBell() {
         const previousUnread = notifications.filter((n) => !n.read).length;
 
         if (unreadCount > previousUnread && notifications.length > 0) {
-          audioRef.current?.play().catch(() => {});
+          if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.volume = 0.75;
+            audioRef.current.play().catch(() => {
+              // User interaction may be required before audio playback works.
+            });
+          }
 
           const newest = data.data.find((n: Notification) => !n.read);
 
