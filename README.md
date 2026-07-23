@@ -68,7 +68,7 @@ cd ZendaFund
 ## 🚀 Deployment
 
 The project is pre-configured and optimized for **Vercel** with support for edge runtimes, connection pools, and route optimization. Ensure that you have specified all the relevant `.env` variables inside your Vercel Project Settings prior to launching.
-
+```
 ---
 
 ## ⚖️ License
